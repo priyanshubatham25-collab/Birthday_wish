@@ -1,0 +1,1366 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A Birthday Surprise</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,800;1,9..144,600&family=Figtree:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Marks that JavaScript is running, so scroll reveals only hide things when they can also show them -->
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+  </head>
+  <body>
+    <style>
+      /* ================= SURPRISE BIRTHDAY THEME ================= */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      .surprise-page {
+        --night: #10091f;
+        --night-2: #24143d;
+        --gold: #ffd77a;
+        --gold-dark: #c99b39;
+        --rose: #ff7eb6;
+        --ivory: #fff8eb;
+
+        background: var(--night);
+        color: var(--ivory);
+        font-family: "Figtree", system-ui, sans-serif;
+        overflow: hidden;
+      }
+
+      .display {
+        font-family: "Fraunces", Georgia, serif;
+        letter-spacing: -0.01em;
+      }
+
+      button {
+        font-family: inherit;
+      }
+      :focus-visible {
+        outline: 3px solid var(--rose);
+        outline-offset: 4px;
+      }
+
+      /* ================= BLUR REVEAL ================= */
+      /* Uses translate/scale (not transform) so it never clashes with other transforms */
+      @keyframes blurReveal {
+        from {
+          opacity: 0;
+          filter: blur(25px);
+          translate: 0 20px;
+          scale: 1.05;
+        }
+        to {
+          opacity: 1;
+          filter: blur(0);
+          translate: 0 0;
+          scale: 1;
+        }
+      }
+
+      /* On page open: hero items unblur one after another */
+      .hero-item {
+        animation: blurReveal 1.4s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s)
+          backwards;
+      }
+
+      /* On scroll: revealed sections unblur as they come into view */
+      .js .blur-in {
+        opacity: 0;
+        filter: blur(20px);
+        translate: 0 30px;
+        scale: 1.04;
+      }
+      .js .blur-in.visible {
+        opacity: 1;
+        filter: blur(0);
+        translate: 0 0;
+        scale: 1;
+        transition:
+          opacity 1.1s ease var(--d, 0s),
+          filter 1.1s ease var(--d, 0s),
+          translate 1.1s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s),
+          scale 1.1s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+      }
+
+      /* ================= HERO ================= */
+      .surprise-hero {
+        min-height: 100vh;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 70px 20px;
+        background:
+          radial-gradient(circle at 50% 55%, #4a2a72 0%, transparent 55%),
+          radial-gradient(circle at center, #34204f 0%, #10091f 70%);
+      }
+
+      .surprise-hero::before {
+        content: "";
+        position: absolute;
+        inset: 20px;
+        border: 1px solid rgba(255, 215, 122, 0.2);
+        pointer-events: none;
+      }
+
+      .sky {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .sky i {
+        position: absolute;
+        font-style: normal;
+        color: var(--gold);
+        animation: twinkle var(--t, 3s) ease-in-out var(--d, 0s) infinite;
+      }
+      @keyframes twinkle {
+        0%,
+        100% {
+          opacity: 0.15;
+          scale: 0.6;
+        }
+        50% {
+          opacity: 1;
+          scale: 1.3;
+        }
+      }
+
+      .surprise-content {
+        position: relative;
+        z-index: 2;
+        max-width: 850px;
+      }
+
+      .surprise-label {
+        color: var(--gold);
+        letter-spacing: 5px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 28px;
+      }
+
+      .surprise-hero h1 {
+        font-size: clamp(42px, 8vw, 88px);
+        font-weight: 600;
+        line-height: 1.08;
+      }
+
+      .surprise-hero h1 span {
+        display: block;
+        color: var(--gold);
+        font-style: italic;
+        margin-top: 12px;
+        overflow-wrap: anywhere;
+      }
+
+      .surprise-subtitle {
+        color: #d5c4e8;
+        font-size: 18px;
+        line-height: 1.8;
+        margin: 28px auto 0;
+        max-width: 580px;
+      }
+
+      /* ================= GIFT BOX ================= */
+      .gift-area {
+        margin: 40px auto 10px;
+        position: relative;
+        width: 220px;
+        height: 230px;
+      }
+
+      .rays {
+        position: absolute;
+        left: 50%;
+        top: 40%;
+        width: 600px;
+        height: 600px;
+        margin: -300px 0 0 -300px;
+        border-radius: 50%;
+        background: repeating-conic-gradient(
+          rgba(255, 215, 122, 0.28) 0 7deg,
+          transparent 7deg 22deg
+        );
+        -webkit-mask: radial-gradient(circle, #000 0, transparent 66%);
+        mask: radial-gradient(circle, #000 0, transparent 66%);
+        opacity: 0;
+        transition: opacity 1.2s ease;
+        animation: spin 22s linear infinite;
+        pointer-events: none;
+      }
+      @keyframes spin {
+        to {
+          rotate: 360deg;
+        }
+      }
+      .gift-area.open .rays {
+        opacity: 1;
+      }
+
+      .gift {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        border: 0;
+        background: none;
+        cursor: pointer;
+        transition: scale 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+      }
+      .gift:hover {
+        scale: 1.05;
+      }
+      .gift:disabled {
+        cursor: default;
+        scale: 1;
+      }
+
+      .gift-light {
+        position: absolute;
+        left: 30px;
+        bottom: 100px;
+        width: 160px;
+        height: 150px;
+        background: radial-gradient(
+          ellipse at 50% 100%,
+          rgba(255, 238, 170, 0.95),
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.9s ease;
+      }
+      .gift-area.open .gift-light {
+        opacity: 1;
+      }
+
+      .gift-box {
+        position: absolute;
+        bottom: 0;
+        left: 25px;
+        width: 170px;
+        height: 125px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, #e0457b, #a42a5e);
+        box-shadow: 0 18px 45px rgba(224, 69, 123, 0.35);
+      }
+
+      .gift-box::before,
+      .gift-lid::before {
+        content: "";
+        position: absolute;
+        width: 30px;
+        height: 100%;
+        background: linear-gradient(90deg, #e6b94f, #ffe8a3, #e6b94f);
+      }
+      .gift-box::before {
+        left: 70px;
+      }
+
+      .gift-lid {
+        position: absolute;
+        left: 12px;
+        bottom: 118px;
+        width: 196px;
+        height: 38px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, #f06a99, #c23b72);
+        z-index: 2;
+        transition:
+          transform 1s cubic-bezier(0.3, 1.2, 0.5, 1),
+          opacity 1s ease;
+      }
+      .gift-lid::before {
+        left: 83px;
+      }
+
+      .bow {
+        position: absolute;
+        left: 84px;
+        bottom: 150px;
+        width: 52px;
+        height: 34px;
+        z-index: 3;
+        transition:
+          transform 1s cubic-bezier(0.3, 1.2, 0.5, 1),
+          opacity 1s ease;
+      }
+      .bow::before,
+      .bow::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        width: 30px;
+        height: 30px;
+        border: 7px solid var(--gold);
+      }
+      .bow::before {
+        left: -10px;
+        rotate: -25deg;
+        border-radius: 70% 30% 70% 30%;
+      }
+      .bow::after {
+        right: -10px;
+        rotate: 25deg;
+        border-radius: 30% 70% 30% 70%;
+      }
+      .bow i {
+        position: absolute;
+        left: 19px;
+        top: 9px;
+        width: 14px;
+        height: 16px;
+        border-radius: 5px;
+        background: var(--gold);
+        z-index: 1;
+      }
+
+      .gift-area.open .gift-lid,
+      .gift-area.open .bow {
+        transform: translateY(-170px) rotate(-18deg);
+        opacity: 0;
+      }
+
+      /* Shake before it opens, and a small hint wiggle while waiting */
+      .gift-area.shaking .gift {
+        animation: shake 0.65s ease-in-out;
+      }
+      .gift.wiggle {
+        animation: wiggle 0.9s ease;
+      }
+      @keyframes shake {
+        10% {
+          rotate: -6deg;
+        }
+        20% {
+          rotate: 6deg;
+        }
+        30% {
+          rotate: -8deg;
+        }
+        40% {
+          rotate: 8deg;
+        }
+        50% {
+          rotate: -6deg;
+        }
+        60% {
+          rotate: 6deg;
+        }
+        70% {
+          rotate: -3deg;
+        }
+        80% {
+          rotate: 3deg;
+        }
+        100% {
+          rotate: 0deg;
+        }
+      }
+      @keyframes wiggle {
+        20% {
+          rotate: -4deg;
+        }
+        40% {
+          rotate: 4deg;
+        }
+        60% {
+          rotate: -2deg;
+        }
+        80% {
+          rotate: 2deg;
+        }
+      }
+
+      /* ================= BUTTONS ================= */
+      .surprise-btn {
+        display: inline-block;
+        margin-top: 22px;
+        padding: 16px 35px;
+        border: 1px solid var(--gold);
+        border-radius: 999px;
+        background: var(--gold);
+        color: #1c1028;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .surprise-btn:hover {
+        background: transparent;
+        color: var(--gold);
+        box-shadow: 0 0 25px rgba(255, 215, 122, 0.25);
+      }
+      .surprise-btn:disabled {
+        opacity: 0.85;
+        pointer-events: none;
+      }
+
+      .reveal-hint {
+        color: #b9a5d0;
+        font-size: 14px;
+        margin-top: 18px;
+      }
+
+      /* ================= REVEALED CONTENT ================= */
+      .surprise-reveal {
+        display: none;
+      }
+      .surprise-reveal.show {
+        display: block;
+        animation: revealFade 1.2s ease backwards;
+      }
+      @keyframes revealFade {
+        from {
+          opacity: 0;
+          filter: blur(20px);
+          translate: 0 40px;
+        }
+      }
+
+      /* MESSAGE */
+      .surprise-message {
+        padding: 100px 20px;
+        background: var(--ivory);
+        color: #2c193c;
+      }
+      .message-container {
+        max-width: 850px;
+        margin: auto;
+      }
+
+      .message-heading {
+        text-align: center;
+        margin-bottom: 50px;
+      }
+      .message-heading small {
+        color: #a17a31;
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .message-heading h2 {
+        font-size: clamp(35px, 5vw, 62px);
+        font-weight: 600;
+        margin-top: 18px;
+      }
+
+      .message-card {
+        position: relative;
+        padding: clamp(30px, 6vw, 70px);
+        background: #fffdf8;
+        border: 1px solid #ead7ad;
+        border-radius: 6px;
+        box-shadow: 0 20px 50px rgba(40, 20, 60, 0.1);
+      }
+      .message-card::after {
+        content: "✦";
+        position: absolute;
+        top: -22px;
+        left: 50%;
+        translate: -50% 0;
+        width: 44px;
+        height: 44px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--gold);
+        color: #6c3f83;
+        font-size: 22px;
+        box-shadow: 0 6px 18px rgba(201, 155, 57, 0.4);
+      }
+      .message-card h3 {
+        color: #6c3f83;
+        font-size: 30px;
+        font-style: italic;
+        font-weight: 600;
+        margin-bottom: 26px;
+        overflow-wrap: anywhere;
+      }
+      .message-text {
+        font-size: 18px;
+        line-height: 2;
+        color: #5c4666;
+        white-space: pre-line;
+        overflow-wrap: anywhere;
+      }
+      .message-signature {
+        margin-top: 38px;
+        color: #a17a31;
+        font-size: 24px;
+        font-style: italic;
+      }
+
+      /* Message words unblur one by one */
+      .w {
+        display: inline-block;
+        opacity: 0;
+        filter: blur(10px);
+        translate: 0 6px;
+        transition:
+          opacity 0.7s ease var(--wd, 0s),
+          filter 0.7s ease var(--wd, 0s),
+          translate 0.7s ease var(--wd, 0s);
+      }
+      .message-text.go .w {
+        opacity: 1;
+        filter: blur(0);
+        translate: 0 0;
+      }
+
+      /* GALLERY */
+      .surprise-gallery {
+        padding: 100px 20px;
+        background: #1b102b;
+      }
+      .gallery-heading {
+        text-align: center;
+        margin-bottom: 48px;
+      }
+      .gallery-heading small {
+        color: var(--gold);
+        letter-spacing: 5px;
+        text-transform: uppercase;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      .gallery-heading h2 {
+        font-size: clamp(35px, 5vw, 62px);
+        font-weight: 600;
+        margin-top: 18px;
+      }
+
+      .gallery-wrapper {
+        max-width: 950px;
+        margin: auto;
+      }
+      .gallery-frame {
+        background: #2c1b40;
+        border: 1px solid rgba(255, 215, 122, 0.3);
+        border-radius: 6px;
+        padding: 12px;
+        touch-action: pan-y;
+      }
+      .gallery-frame img {
+        width: 100%;
+        height: 520px;
+        object-fit: cover;
+        display: block;
+        border-radius: 3px;
+        transition:
+          opacity 0.45s ease,
+          filter 0.45s ease;
+      }
+      .gallery-frame img.swap {
+        opacity: 0;
+        filter: blur(14px);
+      }
+      .gallery-caption {
+        text-align: center;
+        padding: 24px 10px 12px;
+        color: #e8d8b9;
+        font-size: 17px;
+        font-style: italic;
+        min-height: 3.6rem;
+      }
+
+      .gallery-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 28px;
+        margin-top: 22px;
+      }
+      .gallery-btn {
+        width: 48px;
+        height: 48px;
+        border: 1px solid var(--gold);
+        border-radius: 50%;
+        color: var(--gold);
+        background: transparent;
+        font-size: 22px;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+      .gallery-btn:hover {
+        background: var(--gold);
+        color: var(--night);
+      }
+      .gallery-counter {
+        color: #d5c4e8;
+        letter-spacing: 2px;
+        font-size: 14px;
+        min-width: 56px;
+        text-align: center;
+      }
+
+      .gallery-dots {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+      }
+      .dot {
+        width: 10px;
+        height: 10px;
+        padding: 0;
+        border: 1px solid var(--gold);
+        border-radius: 50%;
+        background: transparent;
+        cursor: pointer;
+        transition: 0.25s;
+      }
+      .dot[aria-current="true"] {
+        background: var(--gold);
+        scale: 1.25;
+      }
+
+      /* FINALE */
+      .surprise-finale {
+        padding: 110px 20px;
+        text-align: center;
+        background: radial-gradient(circle at center, #34204f, #10091f 70%);
+      }
+      .finale-content {
+        max-width: 800px;
+        margin: auto;
+      }
+      .finale-star {
+        color: var(--gold);
+        font-size: 65px;
+        animation: starPulse 2.5s infinite;
+      }
+      @keyframes starPulse {
+        0%,
+        100% {
+          scale: 1;
+        }
+        50% {
+          scale: 1.2;
+        }
+      }
+      .surprise-finale h2 {
+        font-size: clamp(40px, 7vw, 78px);
+        font-weight: 600;
+        line-height: 1.15;
+        margin-top: 26px;
+      }
+      .surprise-finale h2 span {
+        display: block;
+        color: var(--gold);
+        font-style: italic;
+      }
+      .surprise-finale p {
+        color: #d5c4e8;
+        font-size: 18px;
+        line-height: 1.9;
+        margin-top: 28px;
+      }
+      .finale-signature {
+        color: var(--gold);
+        font-size: 25px;
+        font-style: italic;
+        margin-top: 36px;
+        overflow-wrap: anywhere;
+      }
+
+      /* FOOTER */
+      .surprise-footer {
+        text-align: center;
+        padding: 25px 15px;
+        background: #090510;
+        color: var(--gold);
+        font-size: 12px;
+        letter-spacing: 4px;
+      }
+
+      /* CONFETTI CANVAS */
+      #confetti {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 60;
+      }
+
+      /* ================= RESPONSIVE ================= */
+      @media (max-width: 768px) {
+        .surprise-hero {
+          min-height: 90vh;
+          padding: 60px 20px;
+        }
+        .surprise-hero::before {
+          inset: 12px;
+        }
+        .surprise-label {
+          letter-spacing: 3px;
+        }
+        .surprise-subtitle {
+          font-size: 16px;
+        }
+        .surprise-message,
+        .surprise-gallery {
+          padding: 65px 18px;
+        }
+        .message-text {
+          font-size: 16px;
+          line-height: 1.8;
+        }
+        .gallery-frame img {
+          height: 350px;
+        }
+        .surprise-finale {
+          padding: 75px 20px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .gift-area {
+          scale: 0.85;
+          margin: 25px auto 0;
+        }
+        .gallery-frame {
+          padding: 7px;
+        }
+        .gallery-frame img {
+          height: 280px;
+        }
+        .gallery-controls {
+          gap: 18px;
+        }
+        .gallery-caption {
+          font-size: 15px;
+        }
+      }
+
+      /* ================= REDUCED MOTION ================= */
+      @media (prefers-reduced-motion: reduce) {
+        .hero-item,
+        .surprise-reveal.show,
+        .finale-star,
+        .gift-area.shaking .gift,
+        .gift.wiggle,
+        .rays,
+        .sky i {
+          animation: none;
+        }
+        .js .blur-in {
+          opacity: 1;
+          filter: none;
+          translate: 0 0;
+          scale: 1;
+          transition: none;
+        }
+        .w {
+          opacity: 1;
+          filter: none;
+          translate: 0 0;
+          transition: none;
+        }
+        .gift-lid,
+        .bow,
+        .rays,
+        .gift-light {
+          transition: none;
+        }
+      }
+    </style>
+
+    <canvas id="confetti" aria-hidden="true"></canvas>
+
+    <div class="surprise-page">
+      <!-- SURPRISE HERO -->
+
+      <section class="surprise-hero">
+        <div class="sky" id="sky" aria-hidden="true"></div>
+
+        <div class="surprise-content">
+          <div class="surprise-label hero-item" style="--d: 0.3s">
+            Something Special Is Waiting
+          </div>
+
+          <h1 class="display hero-item" style="--d: 0.7s">
+            A Birthday
+            <span>Surprise For {{ birthday.birthday_person }}</span>
+          </h1>
+
+          <p class="surprise-subtitle hero-item" style="--d: 1.1s">
+            A little gift, a beautiful message, and a collection of memories
+            made just for you. Are you ready to discover your surprise?
+          </p>
+
+          <!-- GIFT BOX -->
+
+          <div class="hero-item" style="--d: 1.5s">
+            <div class="gift-area" id="giftArea">
+              <div class="rays" aria-hidden="true"></div>
+
+              <button
+                type="button"
+                class="gift"
+                id="giftButton"
+                aria-label="Open your birthday gift"
+              >
+                <span class="gift-light" aria-hidden="true"></span>
+                <span class="gift-box" aria-hidden="true"></span>
+                <span class="gift-lid" aria-hidden="true"></span>
+                <span class="bow" aria-hidden="true"><i></i></span>
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="surprise-btn hero-item"
+            id="revealButton"
+            style="--d: 1.9s"
+          >
+            OPEN YOUR SURPRISE ✨
+          </button>
+
+          <p
+            class="reveal-hint hero-item"
+            id="revealHint"
+            style="--d: 2.2s"
+            aria-live="polite"
+          >
+            Tap the gift to open it
+          </p>
+        </div>
+      </section>
+
+      <!-- REVEALED BIRTHDAY CONTENT -->
+
+      <div class="surprise-reveal" id="surpriseReveal">
+        <!-- MESSAGE -->
+
+        <section class="surprise-message">
+          <div class="message-container">
+            <div class="message-heading blur-in">
+              <small>A Message Just For You</small>
+
+              <h2 class="display">Words From The Heart</h2>
+            </div>
+
+            <div class="message-card blur-in" style="--d: 0.2s">
+              <h3 class="display">Dear {{ birthday.birthday_person }},</h3>
+
+              <div class="message-text" id="messageText">
+                {{ birthday.message }}
+              </div>
+
+              <div class="message-signature display">
+                With love,
+                <br />
+                {{ birthday.sender_name }} ✨
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PHOTO GALLERY -->
+
+        {% if birthday_images or birthday.image %}
+
+        <section class="surprise-gallery">
+          <div class="gallery-heading blur-in">
+            <small>Our Special Moments</small>
+
+            <h2 class="display">Memories Inside The Gift</h2>
+          </div>
+
+          <div class="gallery-wrapper blur-in" style="--d: 0.2s">
+            <div class="gallery-frame" id="galleryFrame">
+              {% if birthday_images %}
+
+              <img
+                id="surpriseGalleryImage"
+                src="{{ birthday_images.0.url }}"
+                alt="Birthday memory"
+              />
+
+              <div
+                class="gallery-caption"
+                id="surpriseGalleryCaption"
+                aria-live="polite"
+              >
+                {{ birthday_images.0.message|default:"A beautiful memory ✨" }}
+              </div>
+
+              {% else %}
+
+              <img
+                id="surpriseGalleryImage"
+                src="{{ birthday.image.url }}"
+                alt="Birthday memory"
+              />
+
+              <div class="gallery-caption">A beautiful memory ✨</div>
+
+              {% endif %}
+            </div>
+
+            {% if birthday_images|length > 1 %}
+
+            <div class="gallery-controls">
+              <button
+                class="gallery-btn"
+                id="surprisePrev"
+                type="button"
+                aria-label="Previous photo"
+              >
+                &#8592;
+              </button>
+
+              <span class="gallery-counter" id="surpriseGalleryCounter">
+                1 / {{ birthday_images|length }}
+              </span>
+
+              <button
+                class="gallery-btn"
+                id="surpriseNext"
+                type="button"
+                aria-label="Next photo"
+              >
+                &#8594;
+              </button>
+            </div>
+
+            <div class="gallery-dots" id="galleryDots"></div>
+
+            {% endif %}
+          </div>
+        </section>
+
+        {% endif %}
+
+        <!-- FINAL MESSAGE -->
+
+        <section class="surprise-finale">
+          <div class="finale-content">
+            <div class="finale-star blur-in">✦</div>
+
+            <h2 class="display blur-in" style="--d: 0.2s">
+              The Best Is
+              <span>Yet To Come</span>
+            </h2>
+
+            <p class="blur-in" style="--d: 0.4s">
+              May your life be filled with beautiful surprises, unforgettable
+              memories, endless happiness, and dreams that become reality.
+
+              <br /><br />
+
+              You deserve all the wonderful things this world has to offer.
+            </p>
+
+            <div class="finale-signature display blur-in" style="--d: 0.6s">
+              Happy Birthday, {{ birthday.birthday_person }} ✨
+            </div>
+
+            <div class="blur-in" style="--d: 0.8s">
+              <button type="button" class="surprise-btn" id="celebrateAgain">
+                CELEBRATE AGAIN 🎉
+              </button>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- FOOTER -->
+
+      <footer class="surprise-footer">MADE WITH LOVE & MAGIC ✨</footer>
+    </div>
+
+    {{ birthday_images|json_script:"surprise-gallery-data" }}
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        const $ = function (id) {
+          return document.getElementById(id);
+        };
+
+        /* ===== STARRY SKY ===== */
+
+        const sky = $("sky");
+        for (let i = 0; i < 55; i++) {
+          const star = document.createElement("i");
+          star.textContent = "✦";
+          star.style.left = Math.random() * 100 + "%";
+          star.style.top = Math.random() * 100 + "%";
+          star.style.fontSize = Math.random() * 10 + 5 + "px";
+          star.style.setProperty("--t", Math.random() * 3 + 2.5 + "s");
+          star.style.setProperty("--d", Math.random() * 4 + "s");
+          sky.appendChild(star);
+        }
+
+        /* ===== CONFETTI ===== */
+
+        const canvas = $("confetti");
+        const ctx = canvas.getContext("2d");
+        const colors = ["#ffd77a", "#ff7eb6", "#b79cff", "#7fe6c8", "#fff8eb"];
+        let particles = [];
+        let raf = null;
+
+        function resize() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        resize();
+        window.addEventListener("resize", resize);
+
+        function launch(x, y, count, spread, power) {
+          for (let i = 0; i < count; i++) {
+            const angle =
+              ((-90 + (Math.random() - 0.5) * spread) * Math.PI) / 180;
+            const speed = power * (0.5 + Math.random() * 0.7);
+            particles.push({
+              x: x,
+              y: y,
+              vx: Math.cos(angle) * speed,
+              vy: Math.sin(angle) * speed,
+              w: 6 + Math.random() * 6,
+              h: 8 + Math.random() * 8,
+              r: Math.random() * 6.28,
+              vr: (Math.random() - 0.5) * 0.4,
+              c: colors[i % colors.length],
+            });
+          }
+          if (!raf) raf = requestAnimationFrame(tick);
+        }
+
+        function tick() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          particles = particles.filter(function (p) {
+            return p.y < canvas.height + 30;
+          });
+
+          particles.forEach(function (p) {
+            p.vy += 0.28;
+            p.vx *= 0.992;
+            p.x += p.vx;
+            p.y += p.vy;
+            p.r += p.vr;
+            ctx.save();
+            ctx.translate(p.x, p.y);
+            ctx.rotate(p.r);
+            ctx.fillStyle = p.c;
+            ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            ctx.restore();
+          });
+
+          raf = particles.length ? requestAnimationFrame(tick) : null;
+        }
+
+        function celebrate(x, y) {
+          if (reduce) return;
+          launch(x, y, 100, 70, 17);
+          setTimeout(function () {
+            launch(canvas.width * 0.1, canvas.height, 60, 50, 23);
+          }, 200);
+          setTimeout(function () {
+            launch(canvas.width * 0.9, canvas.height, 60, 50, 23);
+          }, 350);
+        }
+
+        /* ===== GIFT REVEAL ===== */
+
+        const giftArea = $("giftArea");
+        const giftButton = $("giftButton");
+        const revealButton = $("revealButton");
+        const revealHint = $("revealHint");
+        const surpriseReveal = $("surpriseReveal");
+        let opened = false;
+
+        // Small hint wiggle while the gift is waiting to be opened
+        const wiggleTimer = setInterval(function () {
+          if (opened || reduce) return;
+          giftButton.classList.add("wiggle");
+          setTimeout(function () {
+            giftButton.classList.remove("wiggle");
+          }, 900);
+        }, 4500);
+
+        function openGift() {
+          if (opened) return;
+          opened = true;
+          clearInterval(wiggleTimer);
+
+          giftButton.disabled = true;
+          revealButton.disabled = true;
+          revealButton.textContent = "YOUR SURPRISE IS HERE ✨";
+          revealHint.textContent = "A little happiness, created just for you!";
+
+          const wait = reduce ? 0 : 650;
+
+          if (!reduce) giftArea.classList.add("shaking");
+
+          setTimeout(function () {
+            giftArea.classList.remove("shaking");
+            giftArea.classList.add("open");
+
+            const r = giftArea.getBoundingClientRect();
+            celebrate(r.left + r.width / 2, r.top + r.height * 0.4);
+          }, wait);
+
+          setTimeout(function () {
+            surpriseReveal.classList.add("show");
+            startRevealEffects();
+
+            surpriseReveal.scrollIntoView({
+              behavior: reduce ? "auto" : "smooth",
+              block: "start",
+            });
+          }, wait + 1200);
+        }
+
+        giftButton.addEventListener("click", openGift);
+        revealButton.addEventListener("click", openGift);
+
+        /* ===== EFFECTS THAT START WHEN THE CONTENT APPEARS ===== */
+
+        function splitWords(el) {
+          const text = el.textContent.trim();
+          const tokens = text.split(/(\s+)/);
+          const count = tokens.filter(function (t) {
+            return t && !/^\s+$/.test(t);
+          }).length;
+          const step = Math.min(0.07, 3.2 / Math.max(count, 1));
+          let index = 0;
+
+          el.textContent = "";
+
+          tokens.forEach(function (token) {
+            if (!token) return;
+
+            if (/^\s+$/.test(token)) {
+              el.appendChild(document.createTextNode(token));
+            } else {
+              const span = document.createElement("span");
+              span.className = "w";
+              span.style.setProperty("--wd", (index * step).toFixed(2) + "s");
+              span.textContent = token;
+              el.appendChild(span);
+              index++;
+            }
+          });
+        }
+
+        function startRevealEffects() {
+          const messageText = $("messageText");
+
+          if (!reduce) splitWords(messageText);
+
+          const blurItems = Array.from(document.querySelectorAll(".blur-in"));
+
+          if ("IntersectionObserver" in window) {
+            const observer = new IntersectionObserver(
+              function (entries, obs) {
+                entries.forEach(function (entry) {
+                  if (entry.isIntersecting) {
+                    entry.target.classList.add("visible");
+                    obs.unobserve(entry.target);
+                  }
+                });
+              },
+              { threshold: 0.15 },
+            );
+
+            blurItems.forEach(function (item) {
+              observer.observe(item);
+            });
+
+            // The message words start unblurring once the card is mostly in view
+            const wordObserver = new IntersectionObserver(
+              function (entries, obs) {
+                entries.forEach(function (entry) {
+                  if (entry.isIntersecting) {
+                    messageText.classList.add("go");
+                    obs.unobserve(entry.target);
+                  }
+                });
+              },
+              { threshold: 0.3 },
+            );
+
+            wordObserver.observe(messageText);
+          } else {
+            blurItems.forEach(function (item) {
+              item.classList.add("visible");
+            });
+            messageText.classList.add("go");
+          }
+        }
+
+        /* ===== CELEBRATE AGAIN ===== */
+
+        const againButton = $("celebrateAgain");
+
+        if (againButton) {
+          againButton.addEventListener("click", function () {
+            const r = againButton.getBoundingClientRect();
+            celebrate(r.left + r.width / 2, r.top);
+          });
+        }
+
+        /* ===== PHOTO GALLERY ===== */
+
+        const galleryDataElement = $("surprise-gallery-data");
+
+        const galleryImages = galleryDataElement
+          ? JSON.parse(galleryDataElement.textContent)
+          : [];
+
+        const galleryFrame = $("galleryFrame");
+        const galleryImage = $("surpriseGalleryImage");
+        const galleryCaption = $("surpriseGalleryCaption");
+        const galleryCounter = $("surpriseGalleryCounter");
+        const dotsBox = $("galleryDots");
+
+        let currentIndex = 0;
+        let slideshowTimer;
+        let paused = false;
+
+        // Preload so photos swap smoothly
+        galleryImages.forEach(function (item) {
+          new Image().src = item.url;
+        });
+
+        function updateDots() {
+          if (!dotsBox) return;
+          Array.from(dotsBox.children).forEach(function (dot, i) {
+            dot.setAttribute("aria-current", i === currentIndex);
+          });
+        }
+
+        function showGalleryImage(index) {
+          if (!galleryImages.length || !galleryImage) {
+            return;
+          }
+
+          currentIndex = (index + galleryImages.length) % galleryImages.length;
+
+          galleryImage.classList.add("swap");
+
+          setTimeout(function () {
+            galleryImage.src = galleryImages[currentIndex].url;
+
+            if (galleryCaption) {
+              galleryCaption.textContent =
+                galleryImages[currentIndex].message || "A beautiful memory ✨";
+            }
+
+            if (galleryCounter) {
+              galleryCounter.textContent =
+                currentIndex + 1 + " / " + galleryImages.length;
+            }
+
+            updateDots();
+
+            galleryImage.classList.remove("swap");
+          }, 350);
+        }
+
+        function startSlideshow() {
+          clearInterval(slideshowTimer);
+
+          if (galleryImages.length > 1) {
+            slideshowTimer = setInterval(function () {
+              if (!paused) showGalleryImage(currentIndex + 1);
+            }, 5000);
+          }
+        }
+
+        // Dots
+        if (dotsBox && galleryImages.length > 1) {
+          galleryImages.forEach(function (item, i) {
+            const dot = document.createElement("button");
+            dot.type = "button";
+            dot.className = "dot";
+            dot.setAttribute("aria-label", "Show photo " + (i + 1));
+            dot.addEventListener("click", function () {
+              showGalleryImage(i);
+              startSlideshow();
+            });
+            dotsBox.appendChild(dot);
+          });
+          updateDots();
+        }
+
+        const prevButton = $("surprisePrev");
+        const nextButton = $("surpriseNext");
+
+        if (prevButton) {
+          prevButton.addEventListener("click", function () {
+            showGalleryImage(currentIndex - 1);
+            startSlideshow();
+          });
+        }
+
+        if (nextButton) {
+          nextButton.addEventListener("click", function () {
+            showGalleryImage(currentIndex + 1);
+            startSlideshow();
+          });
+        }
+
+        // Swipe on phones, pause while hovering
+        if (galleryFrame && galleryImages.length > 1) {
+          let startX = 0;
+
+          galleryFrame.addEventListener(
+            "touchstart",
+            function (e) {
+              startX = e.changedTouches[0].screenX;
+            },
+            { passive: true },
+          );
+
+          galleryFrame.addEventListener(
+            "touchend",
+            function (e) {
+              const diff = startX - e.changedTouches[0].screenX;
+              if (Math.abs(diff) > 50) {
+                showGalleryImage(currentIndex + (diff > 0 ? 1 : -1));
+                startSlideshow();
+              }
+            },
+            { passive: true },
+          );
+
+          galleryFrame.addEventListener("mouseenter", function () {
+            paused = true;
+          });
+          galleryFrame.addEventListener("mouseleave", function () {
+            paused = false;
+          });
+        }
+
+        startSlideshow();
+      });
+    </script>
+  </body>
+</html>

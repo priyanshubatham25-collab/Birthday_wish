@@ -1,0 +1,1386 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Happy Birthday | {{ birthday.birthday_person }}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Marks that JavaScript is running, so the scroll blur reveal only hides things when it can also show them -->
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
+  </head>
+  <body>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      .minimal-page {
+        --coral: #ff6b4a;
+        --ink: #191919;
+        --paper: #f5f5f2;
+
+        background: var(--paper);
+        color: var(--ink);
+        min-height: 100vh;
+        overflow: hidden;
+        font-family: "Poppins", sans-serif;
+      }
+
+      button {
+        font-family: inherit;
+      }
+      :focus-visible {
+        outline: 3px solid var(--coral);
+        outline-offset: 3px;
+      }
+
+      /* ================= BLUR REVEAL ================= */
+      /* Uses translate/scale (not transform) so it never clashes with the existing rotating, pulsing and sliding animations */
+      @keyframes blurReveal {
+        from {
+          opacity: 0;
+          filter: blur(25px);
+          translate: 0 20px;
+          scale: 1.05;
+        }
+        to {
+          opacity: 1;
+          filter: blur(0);
+          translate: 0 0;
+          scale: 1;
+        }
+      }
+
+      /* On page open: hero elements reveal one after another */
+      .hero-item {
+        animation: blurReveal 1.4s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s)
+          backwards;
+      }
+
+      /* On scroll: every other section unblurs as it comes into view */
+      .js .blur-in {
+        opacity: 0;
+        filter: blur(20px);
+        translate: 0 30px;
+        scale: 1.04;
+      }
+      .js .blur-in.visible {
+        opacity: 1;
+        filter: blur(0);
+        translate: 0 0;
+        scale: 1;
+        transition:
+          opacity 1.1s ease var(--d, 0s),
+          filter 1.1s ease var(--d, 0s),
+          translate 1.1s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s),
+          scale 1.1s cubic-bezier(0.22, 1, 0.36, 1) var(--d, 0s);
+      }
+
+      /* ================= HERO ================= */
+      .minimal-hero {
+        min-height: 88vh;
+        display: flex;
+        align-items: center;
+        padding: 80px 8%;
+        position: relative;
+      }
+
+      .hero-grid {
+        width: 100%;
+        max-width: 1300px;
+        margin: auto;
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        align-items: center;
+        gap: 50px;
+      }
+
+      .hero-left {
+        position: relative;
+        z-index: 2;
+      }
+
+      .hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 12px;
+        background: var(--ink);
+        color: #fff;
+        padding: 10px 18px;
+        font-size: 10px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        border-radius: 50px;
+      }
+      .hero-tag span {
+        color: var(--coral);
+        font-size: 16px;
+      }
+
+      .minimal-title {
+        font-size: clamp(55px, 8vw, 110px);
+        font-weight: 800;
+        line-height: 0.95;
+        letter-spacing: -6px;
+        margin: 35px 0;
+      }
+      .minimal-name {
+        display: block;
+        color: var(--coral);
+        word-break: break-word;
+      }
+
+      .hero-description {
+        color: #777;
+        font-size: 15px;
+        line-height: 2;
+        max-width: 450px;
+      }
+
+      .hero-bottom {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-top: 35px;
+      }
+
+      .hero-circle {
+        width: 55px;
+        height: 55px;
+        background: var(--coral);
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        text-decoration: none;
+        transition: scale 0.25s cubic-bezier(0.3, 1.6, 0.5, 1);
+      }
+      .hero-circle:hover {
+        scale: 1.12;
+      }
+      .hero-circle i {
+        display: block;
+        animation: nudge 1.6s ease-in-out infinite;
+      }
+      @keyframes nudge {
+        50% {
+          translate: 0 5px;
+        }
+      }
+
+      .hero-bottom-text {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      /* Hero decoration: the shape reacts to the pointer and changes its message when tapped */
+      .hero-right {
+        position: relative;
+        min-height: 450px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .shape-btn {
+        position: relative;
+        width: min(100%, 390px);
+        padding: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
+        translate: calc(var(--px, 0) * 16px) calc(var(--py, 0) * 16px);
+        transition: translate 0.35s ease-out;
+      }
+
+      .hero-shape {
+        width: 100%;
+        aspect-ratio: 1;
+        background: var(--coral);
+        border-radius: 48% 52% 38% 62% / 48% 38% 62% 52%;
+        position: relative;
+        animation: shapeMove 8s ease-in-out infinite;
+        transition: scale 0.3s cubic-bezier(0.3, 1.6, 0.5, 1);
+      }
+      .shape-btn:hover .hero-shape {
+        scale: 1.04;
+      }
+      .shape-btn:active .hero-shape {
+        scale: 0.96;
+      }
+
+      @keyframes shapeMove {
+        0%,
+        100% {
+          border-radius: 48% 52% 38% 62% / 48% 38% 62% 52%;
+          transform: rotate(0deg);
+        }
+        50% {
+          border-radius: 60% 40% 60% 40% / 40% 60% 40% 60%;
+          transform: rotate(8deg);
+        }
+      }
+
+      .shape-text {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: clamp(35px, 5vw, 62px);
+        font-weight: 900;
+        line-height: 1;
+        color: #fff;
+        letter-spacing: -3px;
+        transform: rotate(-8deg);
+      }
+      .shape-text > div {
+        transition:
+          opacity 0.25s ease,
+          filter 0.25s ease;
+      }
+      .shape-text > div.swap {
+        opacity: 0;
+        filter: blur(12px);
+      }
+      .shape-text span {
+        display: block;
+        font-size: 20px;
+        letter-spacing: 5px;
+        margin-bottom: 15px;
+      }
+      .shape-text em {
+        font-style: normal;
+      }
+      .shape-hint {
+        display: block;
+        margin-top: 16px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 3px;
+        color: #888;
+        text-transform: uppercase;
+      }
+
+      .hero-number {
+        position: absolute;
+        top: 20px;
+        right: 0;
+        font-size: 100px;
+        font-weight: 900;
+        opacity: 0.08;
+        line-height: 1;
+        pointer-events: none;
+      }
+
+      .hero-star {
+        position: absolute;
+        color: var(--ink);
+        font-size: 45px;
+        animation: starPulse 2s infinite ease-in-out;
+        pointer-events: none;
+      }
+      .hero-star.one {
+        top: 15%;
+        left: 0;
+      }
+      .hero-star.two {
+        bottom: 10%;
+        right: 5%;
+        color: var(--coral);
+        font-size: 60px;
+      }
+      @keyframes starPulse {
+        50% {
+          transform: scale(1.25) rotate(20deg);
+        }
+      }
+
+      /* ================= MARQUEE ================= */
+      .birthday-marquee {
+        background: var(--coral);
+        color: #fff;
+        padding: 18px 0;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .birthday-marquee:hover .marquee-track {
+        animation-play-state: paused;
+      }
+
+      .marquee-track {
+        display: inline-flex;
+        align-items: center;
+        gap: 35px;
+        animation: marqueeMove 25s linear infinite;
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+      }
+      @keyframes marqueeMove {
+        from {
+          transform: translateX(0);
+        }
+        to {
+          transform: translateX(-50%);
+        }
+      }
+
+      /* ================= MESSAGE ================= */
+      .message-section {
+        padding: 110px 8%;
+        background: #fff;
+      }
+      .message-container {
+        max-width: 1100px;
+        margin: auto;
+      }
+
+      .section-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 60px;
+      }
+      .section-label {
+        color: var(--coral);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+      }
+      .section-number {
+        font-size: 13px;
+        color: #aaa;
+        letter-spacing: 2px;
+      }
+
+      .message-layout {
+        display: grid;
+        grid-template-columns: 0.7fr 1.3fr;
+        gap: 60px;
+      }
+
+      .message-side-title {
+        font-size: clamp(30px, 4vw, 48px);
+        font-weight: 800;
+        line-height: 1.1;
+        letter-spacing: -2px;
+      }
+      .message-side-title span {
+        color: var(--coral);
+      }
+
+      .age-big {
+        margin-top: 34px;
+      }
+      .age-big b {
+        display: block;
+        font-size: clamp(90px, 14vw, 170px);
+        font-weight: 900;
+        line-height: 0.9;
+        letter-spacing: -8px;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+      .age-big small {
+        display: block;
+        margin-top: 10px;
+        color: var(--coral);
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 4px;
+      }
+
+      .message-content {
+        border-left: 3px solid var(--coral);
+        padding-left: 35px;
+      }
+      .message-heading {
+        font-size: clamp(25px, 4vw, 40px);
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 25px;
+        overflow-wrap: anywhere;
+      }
+      .message-text {
+        color: #777;
+        font-size: 16px;
+        line-height: 2;
+        white-space: pre-line;
+        overflow-wrap: anywhere;
+      }
+      .message-sender {
+        margin-top: 35px;
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .message-sender span {
+        color: var(--coral);
+        font-family: Georgia, serif;
+        font-style: italic;
+        font-weight: 400;
+      }
+
+      /* ================= GALLERY ================= */
+      .gallery-section {
+        padding: 110px 8%;
+        background: var(--paper);
+      }
+      .gallery-container {
+        max-width: 1200px;
+        margin: auto;
+      }
+
+      .gallery-header {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 30px;
+        margin-bottom: 50px;
+      }
+      .gallery-title {
+        font-size: clamp(35px, 6vw, 70px);
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -4px;
+        margin-top: 20px;
+      }
+      .gallery-title span {
+        color: var(--coral);
+      }
+      .gallery-description {
+        color: #888;
+        font-size: 13px;
+        line-height: 1.8;
+        max-width: 250px;
+      }
+
+      .gallery-frame {
+        position: relative;
+        width: 100%;
+        height: 600px;
+        background: #e8e8e4;
+        overflow: hidden;
+        touch-action: pan-y;
+      }
+      .gallery-frame:focus-visible {
+        outline-offset: -3px;
+      }
+
+      .gallery-slide {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transform: scale(1.08);
+        transition:
+          opacity 1.3s ease,
+          transform 5s ease;
+      }
+      .gallery-slide.active {
+        opacity: 1;
+        transform: scale(1);
+      }
+      .gallery-slide img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .arrow {
+        position: absolute;
+        top: 50%;
+        translate: 0 -50%;
+        z-index: 3;
+        width: 54px;
+        height: 54px;
+        border: 0;
+        border-radius: 50%;
+        background: #fff;
+        color: var(--ink);
+        font-size: 22px;
+        cursor: pointer;
+        opacity: 0;
+        transition:
+          opacity 0.25s,
+          background 0.2s,
+          color 0.2s;
+      }
+      .gallery-frame:hover .arrow,
+      .arrow:focus-visible {
+        opacity: 1;
+      }
+      .arrow:hover {
+        background: var(--coral);
+        color: #fff;
+      }
+      .arrow.prev {
+        left: 20px;
+      }
+      .arrow.next {
+        right: 20px;
+      }
+
+      .progress {
+        height: 4px;
+        background: #e0e0da;
+      }
+      .progress i {
+        display: block;
+        width: 0;
+        height: 100%;
+        background: var(--coral);
+      }
+
+      .thumbs {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+        overflow-x: auto;
+        padding-bottom: 6px;
+      }
+      .thumb {
+        flex: none;
+        width: 82px;
+        height: 58px;
+        padding: 0;
+        border: 3px solid transparent;
+        background: #e8e8e4;
+        cursor: pointer;
+        opacity: 0.55;
+        transition:
+          opacity 0.2s,
+          border-color 0.2s;
+      }
+      .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+      }
+      .thumb:hover {
+        opacity: 1;
+      }
+      .thumb[aria-current="true"] {
+        opacity: 1;
+        border-color: var(--coral);
+      }
+
+      .gallery-caption {
+        margin-top: 22px;
+        color: #777;
+        font-size: 14px;
+        text-align: center;
+        min-height: 22px;
+      }
+      .gallery-counter {
+        text-align: center;
+        margin-top: 12px;
+        font-size: 11px;
+        color: var(--coral);
+        letter-spacing: 3px;
+        font-weight: 700;
+      }
+
+      /* ================= FINAL ================= */
+      .final-section {
+        background: var(--ink);
+        color: #fff;
+        padding: 120px 20px;
+        text-align: center;
+      }
+      .final-label {
+        color: var(--coral);
+        font-size: 11px;
+        letter-spacing: 5px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .final-heading {
+        font-size: clamp(45px, 8vw, 95px);
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -5px;
+        margin: 35px 0;
+      }
+      .final-heading span {
+        color: var(--coral);
+      }
+      .final-text {
+        color: #aaa;
+        font-size: 13px;
+        letter-spacing: 2px;
+        line-height: 2;
+      }
+      .final-decoration {
+        font-size: 50px;
+        color: var(--coral);
+        margin-top: 35px;
+        animation: starPulse 2s infinite;
+      }
+
+      .wish-btn {
+        margin-top: 34px;
+        padding: 16px 38px;
+        border: 2px solid var(--coral);
+        border-radius: 999px;
+        background: var(--coral);
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        letter-spacing: 3px;
+        cursor: pointer;
+        transition:
+          background 0.2s,
+          color 0.2s,
+          scale 0.2s cubic-bezier(0.3, 1.6, 0.5, 1);
+      }
+      .wish-btn:hover {
+        background: transparent;
+        color: var(--coral);
+        scale: 1.05;
+      }
+
+      /* ================= FOOTER ================= */
+      .minimal-footer {
+        background: var(--ink);
+        border-top: 1px solid #333;
+        padding: 25px 15px;
+        text-align: center;
+        color: #777;
+        font-size: 10px;
+        letter-spacing: 3px;
+      }
+
+      /* ================= FLOATING PARTICLES ================= */
+      .floating-symbol {
+        position: fixed;
+        bottom: -30px;
+        z-index: 10;
+        pointer-events: none;
+        color: var(--coral);
+        animation: floatUp 7s linear forwards;
+      }
+      @keyframes floatUp {
+        to {
+          transform: translateY(-110vh) rotate(180deg);
+          opacity: 0;
+        }
+      }
+
+      /* ================= RESPONSIVE ================= */
+      @media (max-width: 900px) {
+        .minimal-hero {
+          padding: 70px 6%;
+        }
+        .hero-grid {
+          grid-template-columns: 1fr;
+          gap: 30px;
+        }
+        .hero-right {
+          min-height: 350px;
+        }
+        .shape-btn {
+          max-width: 320px;
+        }
+        .hero-number {
+          top: 0;
+        }
+        .message-layout {
+          grid-template-columns: 1fr;
+          gap: 35px;
+        }
+        .message-content {
+          padding-left: 25px;
+        }
+        .gallery-header {
+          flex-direction: column;
+          align-items: start;
+        }
+        .gallery-frame {
+          height: 450px;
+        }
+        .arrow {
+          opacity: 1;
+          width: 44px;
+          height: 44px;
+        }
+      }
+
+      @media (max-width: 600px) {
+        .minimal-title {
+          font-size: clamp(48px, 13vw, 75px);
+          letter-spacing: -3px;
+        }
+        .hero-description {
+          font-size: 14px;
+        }
+        .hero-right {
+          min-height: 300px;
+        }
+        .shape-btn {
+          max-width: 270px;
+        }
+        .shape-text {
+          font-size: 44px;
+        }
+        .shape-text span {
+          font-size: 14px;
+        }
+        .hero-number {
+          font-size: 70px;
+        }
+        .message-section,
+        .gallery-section {
+          padding: 75px 6%;
+        }
+        .section-top {
+          margin-bottom: 40px;
+        }
+        .message-side-title {
+          font-size: 36px;
+        }
+        .message-content {
+          padding-left: 20px;
+        }
+        .message-text {
+          font-size: 15px;
+        }
+        .gallery-title {
+          font-size: 45px;
+          letter-spacing: -2px;
+        }
+        .gallery-frame {
+          height: 350px;
+        }
+        .final-section {
+          padding: 85px 20px;
+        }
+        .final-heading {
+          letter-spacing: -3px;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        *,
+        *::before,
+        *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+        .hero-item {
+          animation: none;
+        }
+        .js .blur-in {
+          opacity: 1;
+          filter: none;
+          translate: 0 0;
+          scale: 1;
+        }
+      }
+    </style>
+
+    <div class="minimal-page">
+      <!-- HERO -->
+      <section class="minimal-hero" id="hero">
+        <div class="hero-grid">
+          <div class="hero-left">
+            <div class="hero-tag hero-item" style="--d: 0.3s">
+              <span>✦</span>
+              Birthday Edition
+            </div>
+
+            <h1 class="minimal-title hero-item" style="--d: 0.7s">
+              HAPPY
+              <br />
+              BIRTHDAY
+              <span class="minimal-name"> {{ birthday.birthday_person }} </span>
+            </h1>
+
+            <p class="hero-description hero-item" style="--d: 1.1s">
+              A day to celebrate your story, your dreams, your smile, and every
+              beautiful thing that makes you who you are.
+            </p>
+
+            <div class="hero-bottom hero-item" style="--d: 1.5s">
+              <a
+                href="#message"
+                class="hero-circle"
+                aria-label="Scroll down to your surprise"
+              >
+                <i class="bi bi-arrow-down"></i>
+              </a>
+
+              <p class="hero-bottom-text">
+                Scroll down
+                <br />
+                For your special surprise
+              </p>
+            </div>
+          </div>
+
+          <div class="hero-right hero-item" id="heroRight" style="--d: 0.9s">
+            <div class="hero-number" aria-hidden="true">01</div>
+
+            <span class="hero-star one" aria-hidden="true">✳</span>
+
+            <div>
+              <button
+                type="button"
+                class="shape-btn"
+                id="shapeBtn"
+                aria-label="Change the message"
+              >
+                <div class="hero-shape">
+                  <div class="shape-text">
+                    <div id="shapeCopy">
+                      <span>YOUR DAY</span>
+                      <em id="line1">MAKE IT</em>
+                      <br />
+                      <em id="line2">SPECIAL</em>
+                      <br />
+                      ✦
+                    </div>
+                  </div>
+                </div>
+              </button>
+
+              <span class="shape-hint" style="text-align: center"
+                >Tap the shape</span
+              >
+            </div>
+
+            <span class="hero-star two" aria-hidden="true">✦</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- MARQUEE -->
+      <div class="birthday-marquee blur-in" aria-hidden="true">
+        <div class="marquee-track" id="marqueeTrack">
+          <span>HAPPY BIRTHDAY ✦</span>
+          <span>MAKE A WISH ✦</span>
+          <span>CELEBRATE YOURSELF ✦</span>
+          <span>HAPPY BIRTHDAY ✦</span>
+          <span>MAKE A WISH ✦</span>
+          <span>CELEBRATE YOURSELF ✦</span>
+        </div>
+      </div>
+
+      <!-- MESSAGE -->
+      <section class="message-section" id="message">
+        <div class="message-container">
+          <div class="section-top blur-in">
+            <p class="section-label">01 / The Birthday Letter</p>
+
+            <p class="section-number">A MESSAGE FROM THE HEART</p>
+          </div>
+
+          <div class="message-layout">
+            <div class="blur-in">
+              <h2 class="message-side-title">
+                A LITTLE
+                <br />
+                NOTE
+                <br />
+                <span>FOR YOU.</span>
+              </h2>
+
+              {% if birthday.age %}
+              <div class="age-big" id="ageBlock">
+                <b id="ageNum" data-to="{{ birthday.age }}"
+                  >{{ birthday.age }}</b
+                >
+                <small>✦ YEARS OF YOU</small>
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="message-content blur-in" style="--d: 0.2s">
+              <h2 class="message-heading">{{ birthday.card_title }}</h2>
+
+              <p class="message-text">{{ birthday.message }}</p>
+
+              <p class="message-sender">
+                With love,
+                <span>{{ birthday.sender_name }}</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- GALLERY -->
+      {% if birthday_images or birthday.image %}
+      <section class="gallery-section">
+        <div class="gallery-container">
+          <div class="gallery-header blur-in">
+            <div>
+              <p class="section-label">02 / The Memories</p>
+
+              <h2 class="gallery-title">
+                GOOD TIMES.
+                <br />
+                <span>GREAT</span> MEMORIES.
+              </h2>
+            </div>
+
+            <p class="gallery-description">
+              Every picture is a little piece of happiness. Here are some
+              moments worth keeping forever.
+            </p>
+          </div>
+
+          <div class="blur-in" style="--d: 0.15s">
+            <div
+              class="gallery-frame"
+              id="galleryFrame"
+              tabindex="0"
+              aria-label="Photo gallery. Use the left and right arrow keys to browse."
+            >
+              {% if birthday_images %} {% for photo in birthday_images %}
+              <div
+                class="gallery-slide {% if forloop.first %}active{% endif %}"
+                data-message="{{ photo.message|default:birthday.message }}"
+              >
+                <img
+                  src="{{ photo.url }}"
+                  alt="Birthday memory {{ forloop.counter }}"
+                />
+              </div>
+              {% endfor %} {% elif birthday.image %}
+              <div
+                class="gallery-slide active"
+                data-message="{{ birthday.message }}"
+              >
+                <img src="{{ birthday.image.url }}" alt="Birthday memory" />
+              </div>
+              {% endif %} {% if birthday_images|length > 1 %}
+              <button
+                type="button"
+                class="arrow prev"
+                id="prevSlide"
+                aria-label="Previous photo"
+              >
+                &#8592;
+              </button>
+              <button
+                type="button"
+                class="arrow next"
+                id="nextSlide"
+                aria-label="Next photo"
+              >
+                &#8594;
+              </button>
+              {% endif %}
+            </div>
+
+            <div class="progress" aria-hidden="true"><i id="slideBar"></i></div>
+
+            <div class="thumbs" id="thumbs"></div>
+          </div>
+
+          <p
+            class="gallery-caption blur-in"
+            id="galleryCaption"
+            style="--d: 0.3s"
+            aria-live="polite"
+          >
+            A beautiful memory to treasure.
+          </p>
+
+          <p
+            class="gallery-counter blur-in"
+            id="galleryCounter"
+            style="--d: 0.4s"
+          ></p>
+        </div>
+      </section>
+      {% endif %}
+
+      <!-- FINAL -->
+      <section class="final-section">
+        <p class="final-label blur-in">03 / The Final Wish</p>
+
+        <h2 class="final-heading blur-in" style="--d: 0.2s">
+          KEEP
+          <br />
+          <span>SHINING.</span>
+        </h2>
+
+        <p class="final-text blur-in" style="--d: 0.4s">
+          DREAM BIG.
+          <br />
+          LOVE MORE.
+          <br />
+          BE YOURSELF.
+        </p>
+
+        <div class="final-decoration blur-in" style="--d: 0.6s">✳</div>
+
+        <div class="blur-in" style="--d: 0.8s">
+          <button type="button" class="wish-btn" id="wishBtn">
+            MAKE A WISH ✦
+          </button>
+        </div>
+      </section>
+
+      <footer class="minimal-footer">
+        <div class="blur-in">
+          CREATED WITH LOVE ✦ FOR {{ birthday.birthday_person|upper }}
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      (function () {
+        const reduce = window.matchMedia(
+          "(prefers-reduced-motion: reduce)",
+        ).matches;
+        const $ = function (id) {
+          return document.getElementById(id);
+        };
+
+        /* ================= FLOATING SYMBOLS ================= */
+
+        function createFloatingSymbols(count) {
+          const symbols = ["✦", "✳", "✧", "♡"];
+
+          for (let i = 0; i < count; i++) {
+            const item = document.createElement("span");
+
+            item.className = "floating-symbol";
+            item.textContent =
+              symbols[Math.floor(Math.random() * symbols.length)];
+            item.style.left = Math.random() * 100 + "vw";
+            item.style.fontSize = Math.random() * 14 + 10 + "px";
+            item.style.animationDuration = Math.random() * 3 + 5 + "s";
+
+            document.body.appendChild(item);
+
+            setTimeout(function () {
+              item.remove();
+            }, 8500);
+          }
+        }
+
+        /* ================= HERO SHAPE ================= */
+
+        const shapeBtn = $("shapeBtn");
+        const shapeCopy = $("shapeCopy");
+        const heroRight = $("heroRight");
+        const phrases = [
+          ["MAKE IT", "SPECIAL"],
+          ["MAKE A", "WISH"],
+          ["CELEBRATE", "YOURSELF"],
+          ["SHINE", "BRIGHT"],
+          ["DREAM", "BIG"],
+          ["LOVE", "MORE"],
+        ];
+        let phraseIndex = 0;
+
+        shapeBtn.addEventListener("click", function () {
+          phraseIndex = (phraseIndex + 1) % phrases.length;
+
+          function apply() {
+            $("line1").textContent = phrases[phraseIndex][0];
+            $("line2").textContent = phrases[phraseIndex][1];
+            shapeCopy.classList.remove("swap");
+          }
+
+          if (reduce) {
+            apply();
+          } else {
+            shapeCopy.classList.add("swap");
+            setTimeout(apply, 250);
+          }
+
+          createFloatingSymbols(6);
+        });
+
+        // The shape drifts slightly towards the pointer
+        if (!reduce) {
+          heroRight.addEventListener("pointermove", function (e) {
+            const r = heroRight.getBoundingClientRect();
+            shapeBtn.style.setProperty(
+              "--px",
+              ((e.clientX - r.left) / r.width - 0.5) * 2,
+            );
+            shapeBtn.style.setProperty(
+              "--py",
+              ((e.clientY - r.top) / r.height - 0.5) * 2,
+            );
+          });
+          heroRight.addEventListener("pointerleave", function () {
+            shapeBtn.style.setProperty("--px", 0);
+            shapeBtn.style.setProperty("--py", 0);
+          });
+        }
+
+        /* ================= MARQUEE SPEEDS UP WHILE SCROLLING ================= */
+
+        const track = $("marqueeTrack");
+        const marqueeAnim =
+          track && track.getAnimations ? track.getAnimations()[0] : null;
+
+        if (marqueeAnim && !reduce) {
+          let lastY = window.scrollY;
+          let rate = 1;
+
+          (function loop() {
+            const y = window.scrollY;
+            const target = 1 + Math.min(Math.abs(y - lastY) * 0.6, 10);
+            lastY = y;
+            rate += (target - rate) * 0.12;
+            marqueeAnim.playbackRate = rate;
+            requestAnimationFrame(loop);
+          })();
+        }
+
+        /* ================= AGE COUNT-UP ================= */
+
+        const ageNum = $("ageNum");
+
+        if (ageNum && !reduce && "IntersectionObserver" in window) {
+          const target = parseInt(ageNum.dataset.to, 10);
+
+          if (!isNaN(target) && target > 0) {
+            ageNum.textContent = "0";
+
+            const ageObserver = new IntersectionObserver(
+              function (entries, obs) {
+                if (!entries[0].isIntersecting) return;
+                obs.disconnect();
+
+                const start = performance.now();
+                const duration = 1600;
+
+                (function tick(now) {
+                  const t = Math.min((now - start) / duration, 1);
+                  const eased = 1 - Math.pow(1 - t, 3);
+                  ageNum.textContent = Math.round(target * eased);
+                  if (t < 1) requestAnimationFrame(tick);
+                })(start);
+              },
+              { threshold: 0.6 },
+            );
+
+            ageObserver.observe(ageNum);
+          }
+        }
+
+        /* ================= PHOTO SLIDESHOW ================= */
+
+        const slides = Array.from(document.querySelectorAll(".gallery-slide"));
+        const caption = $("galleryCaption");
+        const counter = $("galleryCounter");
+        const bar = $("slideBar");
+        const thumbsBox = $("thumbs");
+        const frame = $("galleryFrame");
+        const SLIDE_MS = 4500;
+
+        let currentIndex = 0;
+        let slideTimer = null;
+        let paused = false;
+
+        function updateThumbs() {
+          if (!thumbsBox) return;
+          Array.from(thumbsBox.children).forEach(function (t, i) {
+            t.setAttribute("aria-current", i === currentIndex);
+          });
+        }
+
+        function schedule() {
+          clearTimeout(slideTimer);
+
+          if (bar) {
+            bar.style.transition = "none";
+            bar.style.width = "0";
+            void bar.offsetWidth;
+          }
+
+          if (slides.length > 1 && !paused) {
+            if (bar && !reduce) {
+              bar.style.transition = "width " + SLIDE_MS + "ms linear";
+              bar.style.width = "100%";
+            }
+            slideTimer = setTimeout(function () {
+              showSlide(currentIndex + 1);
+            }, SLIDE_MS);
+          }
+        }
+
+        function showSlide(index) {
+          if (!slides.length) return;
+
+          slides.forEach(function (slide) {
+            slide.classList.remove("active");
+          });
+
+          currentIndex = (index + slides.length) % slides.length;
+
+          const activeSlide = slides[currentIndex];
+          activeSlide.classList.add("active");
+
+          if (caption) {
+            caption.textContent =
+              activeSlide.dataset.message || "A beautiful memory to treasure.";
+          }
+
+          if (counter) {
+            counter.textContent =
+              "MEMORY " +
+              String(currentIndex + 1).padStart(2, "0") +
+              " / " +
+              String(slides.length).padStart(2, "0");
+          }
+
+          updateThumbs();
+          schedule();
+        }
+
+        // Thumbnails
+        if (thumbsBox && slides.length > 1) {
+          slides.forEach(function (slide, i) {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "thumb";
+            btn.setAttribute("aria-label", "Show photo " + (i + 1));
+
+            const img = document.createElement("img");
+            img.src = slide.querySelector("img").src;
+            img.alt = "";
+            btn.appendChild(img);
+
+            btn.addEventListener("click", function () {
+              showSlide(i);
+            });
+            thumbsBox.appendChild(btn);
+          });
+        }
+
+        if ($("prevSlide"))
+          $("prevSlide").addEventListener("click", function () {
+            showSlide(currentIndex - 1);
+          });
+        if ($("nextSlide"))
+          $("nextSlide").addEventListener("click", function () {
+            showSlide(currentIndex + 1);
+          });
+
+        if (frame) {
+          // Keyboard
+          frame.addEventListener("keydown", function (e) {
+            if (e.key === "ArrowLeft") showSlide(currentIndex - 1);
+            if (e.key === "ArrowRight") showSlide(currentIndex + 1);
+          });
+
+          // Pause while the visitor is looking closely
+          frame.addEventListener("mouseenter", function () {
+            paused = true;
+            schedule();
+          });
+          frame.addEventListener("mouseleave", function () {
+            paused = false;
+            schedule();
+          });
+
+          // Mobile swipe
+          let touchStartX = 0;
+
+          frame.addEventListener(
+            "touchstart",
+            function (event) {
+              touchStartX = event.changedTouches[0].screenX;
+            },
+            { passive: true },
+          );
+
+          frame.addEventListener(
+            "touchend",
+            function (event) {
+              const difference = touchStartX - event.changedTouches[0].screenX;
+
+              if (Math.abs(difference) > 50 && slides.length > 1) {
+                showSlide(currentIndex + (difference > 0 ? 1 : -1));
+              }
+            },
+            { passive: true },
+          );
+        }
+
+        /* ================= MAKE A WISH ================= */
+
+        const wishBtn = $("wishBtn");
+        let wishTimer = null;
+
+        wishBtn.addEventListener("click", function () {
+          createFloatingSymbols(24);
+          wishBtn.textContent = "WISH SENT ✦";
+          clearTimeout(wishTimer);
+          wishTimer = setTimeout(function () {
+            wishBtn.textContent = "MAKE A WISH ✦";
+          }, 2500);
+        });
+
+        /* ================= BLUR REVEAL ON SCROLL ================= */
+
+        const blurItems = Array.from(document.querySelectorAll(".blur-in"));
+
+        if ("IntersectionObserver" in window) {
+          const revealObserver = new IntersectionObserver(
+            function (entries, observer) {
+              entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add("visible");
+                  observer.unobserve(entry.target);
+                }
+              });
+            },
+            { threshold: 0.15 },
+          );
+
+          blurItems.forEach(function (item) {
+            revealObserver.observe(item);
+          });
+        } else {
+          blurItems.forEach(function (item) {
+            item.classList.add("visible");
+          });
+        }
+
+        /* ================= INITIALIZE ================= */
+
+        showSlide(0);
+        createFloatingSymbols(12);
+      })();
+    </script>
+  </body>
+</html>

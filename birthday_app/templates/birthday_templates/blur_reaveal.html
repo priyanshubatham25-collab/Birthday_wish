@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Birthday Surprise{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Pacifico&display=swap"
+          rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        poppins: ['Poppins', 'sans-serif'],
+                        pacifico: ['Pacifico', 'cursive'],
+                    },
+                    colors: {
+                        birthday: {
+                            pink: '#d63384',
+                            purple: '#8b5cf6',
+                            dark: '#2d1b36',
+                            light: '#fff8fc',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Blur Reveal Animation -->
+    <style>
+        @keyframes blurReveal {
+            0% {
+                opacity: 0;
+                filter: blur(15px);
+                transform: scale(0.95);
+            }
+
+            60% {
+                opacity: 0.8;
+                filter: blur(4px);
+                transform: scale(1.02);
+            }
+
+            100% {
+                opacity: 1;
+                filter: blur(0);
+                transform: scale(1);
+            }
+        }
+
+        #birthday-content {
+            animation: blurReveal 1s ease-out both;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            #birthday-content {
+                animation: none;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="font-poppins">
+
+    <!-- Birthday Wish Content -->
+    <main id="birthday-content">
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+    <!-- Blur Reveal Animation JavaScript -->
+    <script>
+        window.addEventListener("pageshow", function () {
+
+            const content = document.getElementById("birthday-content");
+
+            if (content) {
+                content.style.animation = "none";
+
+                // Reset animation
+                void content.offsetWidth;
+
+                // Restart animation
+                content.style.animation = "";
+            }
+
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

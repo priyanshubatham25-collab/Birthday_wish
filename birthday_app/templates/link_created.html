@@ -1,0 +1,492 @@
+{% extends 'base.html' %} {% block title %}Birthday Link Created{% endblock %}
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Figtree:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --ink: #2b1038;
+    --mag: #e11d7a;
+    --vio: #6d28d9;
+    --sun: #ffd45e;
+    --blush: #fff6fa;
+    --lilac: #efe4ff;
+    --muted: #6b4a7a;
+  }
+  body {
+    background: var(--blush);
+    color: var(--ink);
+    font-family: "Figtree", system-ui, sans-serif;
+  }
+  .display {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+  :focus-visible {
+    outline: 3px solid var(--vio);
+    outline-offset: 3px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 0.85rem 1.4rem;
+    font-weight: 700;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition:
+      transform 0.15s,
+      box-shadow 0.15s;
+    cursor: pointer;
+    text-align: center;
+  }
+  .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  .btn-pink {
+    background: var(--mag);
+    color: #fff;
+  }
+  .btn-white {
+    background: #fff;
+    color: var(--ink);
+  }
+  .btn-ink {
+    background: var(--ink);
+    color: #fff;
+    box-shadow: 4px 4px 0 var(--sun);
+  }
+  .btn-green {
+    background: #25d366;
+    color: var(--ink);
+  }
+  .btn-sm {
+    padding: 0.6rem 1.1rem;
+    font-size: 0.9rem;
+    box-shadow: 3px 3px 0 var(--sun);
+  }
+
+  /* Page */
+  .stage {
+    position: relative;
+    overflow: hidden;
+    min-height: calc(100vh - 4rem);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 1rem;
+    background:
+      radial-gradient(circle at 1px 1px, #f3c9df 1.5px, transparent 0) 0 0/26px
+        26px,
+      var(--blush);
+  }
+  .rise {
+    animation: rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s) both;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+  }
+  .card {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 34rem;
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 28px;
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+  @media (min-width: 640px) {
+    .card {
+      padding: 2.5rem 2.25rem;
+    }
+  }
+  .badge {
+    width: 5.5rem;
+    height: 5.5rem;
+    margin: -4.6rem auto 1.2rem;
+    border: 2px solid var(--ink);
+    border-radius: 50%;
+    background: var(--sun);
+    display: grid;
+    place-items: center;
+    font-size: 2.6rem;
+    box-shadow: 4px 4px 0 var(--ink);
+    animation: pop 0.7s cubic-bezier(0.3, 1.7, 0.5, 1) 0.15s both;
+  }
+  @keyframes pop {
+    from {
+      scale: 0;
+      rotate: -40deg;
+    }
+  }
+
+  /* Link box */
+  .linkbox {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+    border: 2px solid var(--ink);
+    border-radius: 18px;
+    background: var(--blush);
+    padding: 0.45rem;
+  }
+  .linkbox input {
+    flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: 0;
+    outline: 0;
+    padding: 0.4rem 0.6rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--ink);
+    text-overflow: ellipsis;
+  }
+  .linkbox:focus-within {
+    outline: 3px solid var(--vio);
+    outline-offset: 3px;
+  }
+  #status {
+    min-height: 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--vio);
+  }
+
+  /* Balloons + confetti (same as home page) */
+  .balloon {
+    position: absolute;
+    z-index: 1;
+    width: var(--s, 64px);
+    height: calc(var(--s, 64px) * 1.2);
+    border: 0;
+    border-radius: 50% 50% 48% 48%;
+    background:
+      radial-gradient(circle at 30% 28%, #fff9 0 12%, transparent 13%), var(--c);
+    cursor: pointer;
+    animation: bob var(--t, 6s) ease-in-out infinite;
+    transition:
+      scale 0.4s cubic-bezier(0.3, 1.6, 0.5, 1),
+      opacity 0.3s;
+  }
+  .balloon::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 1px;
+    height: 80px;
+    background: #2b103855;
+  }
+  .balloon.popped {
+    scale: 0;
+    opacity: 0;
+    transition:
+      scale 0.12s,
+      opacity 0.12s;
+  }
+  @keyframes bob {
+    50% {
+      translate: 0 -16px;
+    }
+  }
+  .confetti {
+    position: fixed;
+    width: 8px;
+    height: 12px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 90;
+  }
+
+  @media (max-width: 700px) {
+    .balloon.hide-sm {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rise,
+    .balloon,
+    .badge {
+      animation: none;
+    }
+    .btn {
+      transition: none;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+
+<section class="stage">
+  <button
+    type="button"
+    class="balloon"
+    aria-label="Pop balloon"
+    style="--c: #e11d7a; --s: 70px; left: 5%; top: 10%"
+  ></button>
+  <button
+    type="button"
+    class="balloon hide-sm"
+    aria-label="Pop balloon"
+    style="--c: #ffd45e; --s: 52px; --t: 7s; left: 18%; bottom: 12%"
+  ></button>
+  <button
+    type="button"
+    class="balloon"
+    aria-label="Pop balloon"
+    style="--c: #6d28d9; --s: 62px; --t: 5s; right: 6%; top: 14%"
+  ></button>
+  <button
+    type="button"
+    class="balloon hide-sm"
+    aria-label="Pop balloon"
+    style="--c: #2dd4bf; --s: 48px; --t: 8s; right: 17%; bottom: 10%"
+  ></button>
+
+  <div class="card rise" style="margin-top: 3rem">
+    <div class="badge" id="badge" aria-hidden="true">🎉</div>
+
+    <h1 class="display text-4xl sm:text-5xl">Your birthday link is ready.</h1>
+
+    <p class="mt-4 leading-7" style="color: var(--muted)">
+      Your birthday wish has been created. Share this link with the birthday
+      person when the time is right. Anyone who has the link can open it.
+    </p>
+
+    <!-- Birthday link -->
+    <div class="text-left mt-8">
+      <label for="birthdayLink" class="block text-sm font-bold mb-2"
+        >Your birthday link</label
+      >
+
+      <div class="linkbox">
+        <input
+          type="text"
+          id="birthdayLink"
+          value="{{ birthday_url }}"
+          readonly
+        />
+
+        <button
+          type="button"
+          id="copyBtn"
+          onclick="copyBirthdayLink()"
+          class="btn btn-ink btn-sm shrink-0"
+        >
+          <i class="bi bi-copy"></i>
+          <span>Copy</span>
+        </button>
+      </div>
+
+      <p id="status" class="mt-2" role="status" aria-live="polite"></p>
+    </div>
+
+    <!-- Actions -->
+    <div class="grid sm:grid-cols-2 gap-3 mt-4">
+      <button type="button" onclick="shareBirthdayLink()" class="btn btn-pink">
+        <i class="bi bi-share-fill"></i>
+        Share link
+      </button>
+
+      <a
+        id="whatsappBtn"
+        href="#"
+        target="_blank"
+        rel="noopener"
+        class="btn btn-green"
+      >
+        <i class="bi bi-whatsapp"></i>
+        Send on WhatsApp
+      </a>
+
+      <a
+        id="openBtn"
+        href="{{ birthday_url }}"
+        target="_blank"
+        rel="noopener"
+        class="btn btn-white"
+      >
+        <i class="bi bi-eye-fill"></i>
+        See how it looks
+      </a>
+
+      <a href="{% url 'create_birthday' %}" class="btn btn-white">
+        <i class="bi bi-plus-circle-fill"></i>
+        Create another
+      </a>
+    </div>
+
+    <p class="text-sm mt-8" style="color: var(--muted)">
+      Made with ❤️ to make birthdays more special. Pop a balloon while you are
+      here.
+    </p>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const input = document.getElementById("birthdayLink");
+    const status = document.getElementById("status");
+    const copyBtn = document.getElementById("copyBtn");
+    let statusTimer = null;
+
+    // Confetti burst at a screen position
+    function burst(x, y, n) {
+      if (reduce) return;
+      const colors = ["#e11d7a", "#6d28d9", "#ffd45e", "#2dd4bf", "#fb923c"];
+      for (let i = 0; i < n; i++) {
+        const p = document.createElement("i");
+        p.className = "confetti";
+        p.style.cssText =
+          "left:" + x + "px;top:" + y + "px;background:" + colors[i % 5];
+        document.body.appendChild(p);
+        const a = Math.random() * Math.PI * 2,
+          d = 70 + Math.random() * 150;
+        p.animate(
+          [
+            { transform: "translate(0,0) rotate(0)", opacity: 1 },
+            {
+              transform:
+                "translate(" +
+                Math.cos(a) * d +
+                "px," +
+                (Math.sin(a) * d + 100) +
+                "px) rotate(" +
+                Math.random() * 540 +
+                "deg)",
+              opacity: 0,
+            },
+          ],
+          {
+            duration: 1000 + Math.random() * 700,
+            easing: "cubic-bezier(.2,.8,.3,1)",
+          },
+        ).onfinish = function () {
+          p.remove();
+        };
+      }
+    }
+
+    function say(message) {
+      status.textContent = message;
+      clearTimeout(statusTimer);
+      statusTimer = setTimeout(function () {
+        status.textContent = "";
+      }, 3000);
+    }
+
+    // Celebrate when the page opens
+    const badge = document.getElementById("badge");
+    setTimeout(function () {
+      const r = badge.getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top + r.height / 2, 45);
+      setTimeout(function () {
+        burst(r.left + r.width / 2, r.top + r.height / 2, 30);
+      }, 450);
+    }, 500);
+
+    // Pop-able balloons
+    document.querySelectorAll(".balloon").forEach(function (b) {
+      b.addEventListener("click", function () {
+        const r = b.getBoundingClientRect();
+        burst(r.left + r.width / 2, r.top + r.height / 2, 20);
+        b.classList.add("popped");
+        setTimeout(function () {
+          b.classList.remove("popped");
+        }, 3500);
+      });
+    });
+
+    // Select the whole link when the box is clicked
+    input.addEventListener("focus", function () {
+      input.select();
+    });
+
+    // WhatsApp link
+    document.getElementById("whatsappBtn").href =
+      "https://wa.me/?text=" +
+      encodeURIComponent(
+        "I made a birthday surprise for you! Open it here: " + input.value,
+      );
+
+    // Copy birthday link
+    function copied() {
+      const label = copyBtn.querySelector("span");
+      label.textContent = "Copied!";
+      setTimeout(function () {
+        label.textContent = "Copy";
+      }, 1800);
+      say("Link copied. Now paste it into a chat.");
+      const r = copyBtn.getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top, 18);
+    }
+
+    window.copyBirthdayLink = function () {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard
+          .writeText(input.value)
+          .then(copied)
+          .catch(fallbackCopy);
+      } else {
+        fallbackCopy();
+      }
+    };
+
+    function fallbackCopy() {
+      input.select();
+      try {
+        document.execCommand("copy");
+        copied();
+      } catch (e) {
+        say(
+          "Could not copy automatically. Press and hold the link to copy it.",
+        );
+      }
+    }
+
+    // Share birthday link
+    window.shareBirthdayLink = function () {
+      if (navigator.share) {
+        navigator
+          .share({
+            title: "Birthday Wish 🎂",
+            text: "I have created a special birthday wish for you! Open this link:",
+            url: input.value,
+          })
+          .catch(function () {
+            /* sharing cancelled */
+          });
+      } else {
+        window.copyBirthdayLink();
+        say(
+          "Sharing is not supported in this browser, so the link was copied instead.",
+        );
+      }
+    };
+  })();
+</script>
+
+{% endblock %}

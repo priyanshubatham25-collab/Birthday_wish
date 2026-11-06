@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}BirthdayWish{% endblock %}</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Figtree:wght@400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        display: ['Fraunces', 'Georgia', 'serif'],
+                        body: ['Figtree', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        birthday: {
+                            pink: '#e11d7a',
+                            purple: '#6d28d9',
+                            dark: '#2b1038',
+                            light: '#fff6fa',
+                            sun: '#ffd45e',
+                            lilac: '#efe4ff',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Site-wide design system -->
+    <style>
+        :root {
+            --ink: #2b1038;
+            --mag: #e11d7a;
+            --vio: #6d28d9;
+            --sun: #ffd45e;
+            --blush: #fff6fa;
+            --lilac: #efe4ff;
+            --muted: #6b4a7a;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 5rem;
+        }
+
+        body {
+            font-family: 'Figtree', system-ui, sans-serif;
+            background: var(--blush);
+            color: var(--ink);
+        }
+
+        :focus-visible {
+            outline: 3px solid var(--vio);
+            outline-offset: 3px;
+        }
+
+        .display {
+            font-family: 'Fraunces', Georgia, serif;
+            font-weight: 800;
+            letter-spacing: -.02em;
+            line-height: 1.05;
+        }
+
+        /* Shared buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            border: 2px solid var(--ink);
+            border-radius: 999px;
+            padding: .85rem 1.6rem;
+            font-weight: 700;
+            box-shadow: 4px 4px 0 var(--ink);
+            transition: transform .15s, box-shadow .15s;
+            cursor: pointer;
+            text-align: center;
+        }
+        .btn:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+        .btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+        .btn-pink { background: var(--mag); color: #fff; }
+        .btn-white { background: #fff; color: var(--ink); }
+        .btn-ink { background: var(--ink); color: #fff; box-shadow: 4px 4px 0 var(--sun); }
+        .btn-sm { padding: .5rem 1.1rem; font-size: .9rem; box-shadow: 3px 3px 0 var(--ink); }
+
+        /* Skip link */
+        .skip {
+            position: absolute;
+            left: 1rem;
+            top: -4rem;
+            z-index: 100;
+            background: var(--ink);
+            color: #fff;
+            padding: .6rem 1rem;
+            border-radius: 12px;
+            font-weight: 700;
+            transition: top .15s;
+        }
+        .skip:focus { top: 1rem; }
+
+        /* Header */
+        .site-header {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            background: #fff;
+            border-bottom: 2px solid var(--ink);
+        }
+
+        .bar {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 0 1.25rem;
+            height: 4rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: .65rem;
+            font-size: 1.45rem;
+        }
+
+        .brand-mark {
+            width: 2.4rem;
+            height: 2.4rem;
+            display: grid;
+            place-items: center;
+            border: 2px solid var(--ink);
+            border-radius: 50%;
+            background: var(--mag);
+            color: #fff;
+            font-size: 1.05rem;
+            box-shadow: 2px 2px 0 var(--ink);
+            transition: transform .25s cubic-bezier(.3, 1.7, .5, 1);
+        }
+        .brand:hover .brand-mark { transform: rotate(-12deg) scale(1.1); }
+
+        .brand-name b { color: var(--vio); font-weight: 800; }
+
+        .nav {
+            display: none;
+            align-items: center;
+            gap: .5rem;
+        }
+
+        .nav-link {
+            padding: .45rem 1rem;
+            border: 2px solid transparent;
+            border-radius: 999px;
+            font-weight: 600;
+            transition: background .15s, border-color .15s;
+        }
+        .nav-link:hover { background: var(--lilac); }
+        .nav-link.is-active { border-color: var(--ink); background: var(--sun); }
+
+        .menu-btn {
+            width: 2.7rem;
+            height: 2.7rem;
+            display: grid;
+            place-items: center;
+            border: 2px solid var(--ink);
+            border-radius: 50%;
+            background: #fff;
+            font-size: 1.3rem;
+            box-shadow: 2px 2px 0 var(--ink);
+        }
+        .menu-btn:active { transform: translate(1px, 1px); box-shadow: 0 0 0 var(--ink); }
+
+        .mobile-nav {
+            display: grid;
+            gap: .6rem;
+            padding: 1rem 1.25rem 1.4rem;
+            border-top: 2px solid var(--ink);
+            background: var(--blush);
+        }
+        .mobile-nav[hidden] { display: none; }
+        .mobile-nav .nav-link { display: block; background: #fff; border-color: var(--ink); text-align: center; }
+        .mobile-nav .nav-link.is-active { background: var(--sun); }
+
+        @media (min-width: 768px) {
+            .nav { display: flex; }
+            .menu-btn { display: none; }
+            .mobile-nav { display: none !important; }
+        }
+
+        /* Page transition: the new page slides in from the right.
+           The animation uses "backwards" fill so no transform is left on the page
+           afterwards (a leftover transform would break position: fixed children). */
+        @keyframes pageIn {
+            from { opacity: 0; transform: translateX(40px); }
+        }
+
+        @keyframes pageOut {
+            to { opacity: 0; transform: translateX(-40px); }
+        }
+
+        #page-content {
+            overflow-x: clip;
+            animation: pageIn .5s cubic-bezier(.2, .8, .2, 1) backwards;
+        }
+
+        body.page-leaving #page-content {
+            animation: pageOut .3s ease-in forwards;
+        }
+
+        /* Footer */
+        .site-footer {
+            background: var(--ink);
+            color: #fff;
+            border-top: 2px solid var(--ink);
+        }
+
+        .footer-links a {
+            color: #e8d8f3;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            transition: border-color .15s, color .15s;
+        }
+        .footer-links a:hover { color: var(--sun); border-color: var(--sun); }
+
+        .footer-brand .brand-mark { box-shadow: 2px 2px 0 var(--sun); }
+
+        /* Accessibility */
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            #page-content,
+            body.page-leaving #page-content { animation: none; }
+            .btn, .brand-mark, .nav-link, .skip { transition: none; }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="bg-birthday-light text-birthday-dark min-h-screen flex flex-col">
+
+    <a href="#page-content" class="skip">Skip to content</a>
+
+    {% url 'home' as home_url %}
+
+    <!-- Navbar -->
+    <header class="site-header">
+
+        <div class="bar">
+
+            <!-- Logo -->
+            <a href="{% url 'home' %}" class="brand">
+
+                <span class="brand-mark"><i class="bi bi-balloon-heart-fill"></i></span>
+
+                <span class="display brand-name">Birthday<b>Wish</b></span>
+
+            </a>
+
+            <!-- Navigation Links -->
+            <nav class="nav" aria-label="Main">
+
+                <a href="{% url 'home' %}"
+                   class="nav-link{% if request.path == home_url %} is-active{% endif %}">
+                    Home
+                </a>
+
+                <a href="{% url 'home' %}#templates" class="btn btn-pink btn-sm">
+                    <i class="bi bi-gift-fill"></i>
+                    Create a wish
+                </a>
+
+            </nav>
+
+            <!-- Mobile menu button -->
+            <button type="button" class="menu-btn" id="menuBtn"
+                    aria-label="Open menu" aria-expanded="false" aria-controls="mobileNav">
+                <i class="bi bi-list" id="menuIcon"></i>
+            </button>
+
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="mobile-nav" id="mobileNav" hidden>
+
+            <a href="{% url 'home' %}"
+               class="nav-link{% if request.path == home_url %} is-active{% endif %}">
+                Home
+            </a>
+
+            <a href="{% url 'home' %}#templates" class="btn btn-pink">
+                <i class="bi bi-gift-fill"></i>
+                Create a wish
+            </a>
+
+        </div>
+
+    </header>
+
+    <!-- Main Content -->
+    <main id="page-content" class="flex-grow w-full">
+
+        {% block content %}
+        {% endblock %}
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer mt-auto">
+
+        <div class="max-w-7xl mx-auto px-5 py-12">
+
+            <div class="text-center">
+
+                <a href="{% url 'home' %}" class="brand footer-brand">
+
+                    <span class="brand-mark"><i class="bi bi-balloon-heart-fill"></i></span>
+
+                    <span class="display brand-name">Birthday<b style="color:var(--sun)">Wish</b></span>
+
+                </a>
+
+                <p class="text-sm mt-4 max-w-md mx-auto leading-7" style="color:#d9c6e6">
+                    Make every birthday special with a beautiful
+                    personalized surprise for your loved ones.
+                </p>
+
+                <div class="footer-links flex justify-center gap-6 mt-6 text-sm">
+                    <a href="{% url 'home' %}">Home</a>
+                    <a href="{% url 'home' %}#templates">Choose a design</a>
+                </div>
+
+            </div>
+
+            <div class="mt-10 pt-5 text-center text-sm" style="border-top:1px solid #ffffff26;color:#d9c6e6">
+
+                &copy; {% now "Y" %} BirthdayWish.
+
+                Made with
+                <i class="bi bi-heart-fill" style="color:var(--mag)"></i>
+                for your loved ones.
+
+            </div>
+
+        </div>
+
+    </footer>
+
+    <script>
+    (function () {
+
+        const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        let isNavigating = false;
+
+        // Mobile menu
+        const menuBtn = document.getElementById("menuBtn");
+        const menuIcon = document.getElementById("menuIcon");
+        const mobileNav = document.getElementById("mobileNav");
+
+        function setMenu(open) {
+            mobileNav.hidden = !open;
+            menuBtn.setAttribute("aria-expanded", open);
+            menuBtn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+            menuIcon.className = open ? "bi bi-x-lg" : "bi bi-list";
+        }
+
+        menuBtn.addEventListener("click", function () { setMenu(mobileNav.hidden); });
+
+        mobileNav.addEventListener("click", function (event) {
+            if (event.target.closest("a")) setMenu(false);
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && !mobileNav.hidden) {
+                setMenu(false);
+                menuBtn.focus();
+            }
+        });
+
+        window.addEventListener("resize", function () {
+            if (window.innerWidth >= 768) setMenu(false);
+        });
+
+        // Slide-left page transition on internal links
+        document.addEventListener("click", function (event) {
+
+            if (event.defaultPrevented || event.button !== 0) return;
+
+            const link = event.target.closest("a");
+
+            if (!link) return;
+
+            const href = link.getAttribute("href");
+
+            if (!href || href.startsWith("#") || /^(mailto:|tel:|javascript:)/i.test(href)) return;
+
+            if (
+                link.target === "_blank" ||
+                link.hasAttribute("download") ||
+                event.ctrlKey ||
+                event.metaKey ||
+                event.shiftKey ||
+                event.altKey
+            ) {
+                return;
+            }
+
+            const url = new URL(link.href, window.location.href);
+
+            // Other websites: normal navigation
+            if (url.origin !== window.location.origin) return;
+
+            // Same page (including links that only add a #section): let the browser scroll
+            if (url.pathname === window.location.pathname && url.search === window.location.search) return;
+
+            // Visitors who prefer less motion get instant navigation
+            if (reduce) return;
+
+            event.preventDefault();
+
+            if (isNavigating) return;
+
+            isNavigating = true;
+
+            document.body.classList.add("page-leaving");
+
+            setTimeout(function () {
+                window.location.href = url.href;
+            }, 300);
+
+        });
+
+        // Runs when the page loads or the browser Back/Forward button restores it
+        window.addEventListener("pageshow", function () {
+            isNavigating = false;
+            document.body.classList.remove("page-leaving");
+        });
+
+    })();
+    </script>
+
+    <!-- Extra JavaScript -->
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

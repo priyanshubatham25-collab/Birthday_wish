@@ -1,0 +1,1340 @@
+{% extends 'base.html' %} {% block title %}BirthdayWish | Create Magical
+Birthday Surprises{% endblock %} {% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Figtree:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --ink: #2b1038;
+    --mag: #e11d7a;
+    --vio: #6d28d9;
+    --sun: #ffd45e;
+    --blush: #fff6fa;
+    --lilac: #efe4ff;
+    --muted: #6b4a7a;
+  }
+  body {
+    background: var(--blush);
+    color: var(--ink);
+    font-family: "Figtree", system-ui, sans-serif;
+  }
+  .display {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+  :focus-visible {
+    outline: 3px solid var(--vio);
+    outline-offset: 3px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 0.85rem 1.6rem;
+    font-weight: 700;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition:
+      transform 0.15s,
+      box-shadow 0.15s;
+    cursor: pointer;
+    text-align: center;
+  }
+  .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  .btn:disabled {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .btn-pink {
+    background: var(--mag);
+    color: #fff;
+  }
+  .btn-white {
+    background: #fff;
+    color: var(--ink);
+  }
+  .btn-ink {
+    background: var(--ink);
+    color: #fff;
+    box-shadow: 4px 4px 0 var(--sun);
+  }
+  .btn-sm {
+    padding: 0.55rem 1rem;
+    font-size: 0.8rem;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .pill {
+    display: inline-block;
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  /* Hero */
+  .hero {
+    position: relative;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 1px 1px, #f3c9df 1.5px, transparent 0) 0 0/26px
+        26px,
+      var(--blush);
+  }
+  .rise {
+    animation: rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s) both;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+  }
+  .balloon {
+    position: absolute;
+    z-index: 1;
+    width: var(--s, 64px);
+    height: calc(var(--s, 64px) * 1.2);
+    border: 0;
+    border-radius: 50% 50% 48% 48%;
+    background:
+      radial-gradient(circle at 30% 28%, #fff9 0 12%, transparent 13%), var(--c);
+    cursor: pointer;
+    animation: bob var(--t, 6s) ease-in-out infinite;
+    transition:
+      scale 0.4s cubic-bezier(0.3, 1.6, 0.5, 1),
+      opacity 0.3s;
+  }
+  .balloon::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: 1px;
+    height: 80px;
+    background: #2b103855;
+  }
+  .balloon.popped {
+    scale: 0;
+    opacity: 0;
+    transition:
+      scale 0.12s,
+      opacity 0.12s;
+  }
+  @keyframes bob {
+    50% {
+      translate: 0 -16px;
+    }
+  }
+  .confetti {
+    position: fixed;
+    width: 8px;
+    height: 12px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 90;
+  }
+
+  /* Live demo card */
+  .demo {
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 28px;
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 1.4rem;
+    rotate: -1.5deg;
+    transition: rotate 0.3s;
+  }
+  .demo:hover {
+    rotate: 0deg;
+  }
+  .demo input {
+    width: 100%;
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 0.7rem 1rem;
+    font-weight: 600;
+    background: var(--blush);
+  }
+  .stage {
+    background: var(--ink);
+    color: #fff;
+    border-radius: 18px;
+    padding: 1.4rem 1rem 1.1rem;
+    text-align: center;
+    margin: 1rem 0;
+  }
+  .stage b {
+    color: var(--sun);
+  }
+  .cake {
+    position: relative;
+    width: 150px;
+    height: 124px;
+    margin: 40px auto 10px;
+  }
+  .cake i {
+    position: absolute;
+    display: block;
+  }
+  .cake .t2 {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 56px;
+    border-radius: 12px;
+    background: var(--mag);
+  }
+  .cake .t1 {
+    bottom: 50px;
+    left: 22px;
+    right: 22px;
+    height: 44px;
+    border-radius: 12px;
+    background: #ffb3d6;
+  }
+  .cake .candle {
+    bottom: 92px;
+    left: calc(50% - 5px);
+    width: 10px;
+    height: 34px;
+    border-radius: 3px;
+    background: repeating-linear-gradient(
+      135deg,
+      #fff 0 6px,
+      var(--sun) 6px 12px
+    );
+  }
+  .cake .flame {
+    bottom: 124px;
+    left: calc(50% - 6px);
+    width: 12px;
+    height: 20px;
+    border-radius: 50% 50% 50% 50%/60% 60% 40% 40%;
+    background: linear-gradient(#fff6b0, #ff9d27);
+    box-shadow: 0 0 18px 6px #ffb52e88;
+    transform-origin: 50% 100%;
+    animation: flick 0.6s infinite alternate;
+    transition:
+      opacity 0.25s,
+      scale 0.25s;
+  }
+  .cake.out .flame {
+    opacity: 0;
+    scale: 0.2;
+  }
+  @keyframes flick {
+    to {
+      transform: rotate(6deg) scaleY(1.12);
+    }
+  }
+
+  /* Templates */
+  .chip {
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 0.45rem 1.1rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+    background: #fff;
+    transition: background 0.15s;
+  }
+  .chip:hover {
+    background: var(--lilac);
+  }
+  .chip[aria-pressed="true"] {
+    background: var(--ink);
+    color: #fff;
+  }
+  .template-card {
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 5px 5px 0 var(--ink);
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
+  }
+  .template-card:hover {
+    transform: translate(-3px, -3px);
+    box-shadow: 8px 8px 0 var(--mag);
+  }
+  .template-card[hidden] {
+    display: none;
+  }
+  .template-preview {
+    height: 200px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    position: relative;
+  }
+  .template-card .template-preview {
+    border-radius: 0;
+    border-bottom: 2px solid var(--ink);
+    cursor: pointer;
+  }
+  #modalPreview.template-preview {
+    height: 240px;
+    border-radius: 16px;
+  }
+
+  /* Template mini previews */
+  .preview-minimal {
+    background: #f1eee9;
+  }
+  .mini-minimal {
+    width: 100%;
+    height: 100%;
+    padding: 20px 14px;
+    color: #292929;
+    text-align: left;
+  }
+  .mini-minimal span {
+    font-size: 7px;
+    letter-spacing: 3px;
+    color: #d66d59;
+  }
+  .mini-minimal h3 {
+    font-family: Georgia, serif;
+    font-size: 28px;
+    line-height: 1.05;
+    margin-top: 12px;
+  }
+  .mini-minimal h3 i {
+    color: #d66d59;
+  }
+  .mini-line {
+    width: 35px;
+    height: 2px;
+    background: #d66d59;
+    margin: 10px 0;
+  }
+  .mini-minimal p {
+    font-size: 8px;
+    color: #777;
+  }
+  .mini-minimal-image {
+    position: absolute;
+    right: 16px;
+    bottom: 20px;
+    width: 60px;
+    height: 75px;
+    background: #e9c4b5;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-size: 30px;
+  }
+  .preview-cake {
+    background: radial-gradient(circle, #38205d, #100b20);
+  }
+  .mini-cake {
+    text-align: center;
+    color: #fff;
+    padding: 12px;
+  }
+  .mini-cake span {
+    font-size: 7px;
+    letter-spacing: 2px;
+    color: #f5c76b;
+  }
+  .mini-cake h3 {
+    font-family: Georgia, serif;
+    font-size: 20px;
+    color: #f5d58b;
+    margin-top: 8px;
+  }
+  .mini-cake-emoji {
+    font-size: 53px;
+    margin: 5px 0;
+  }
+  .mini-cake p {
+    font-size: 9px;
+    color: #d5c4e9;
+  }
+  .mini-gold-button {
+    display: inline-block;
+    background: #d6a34c;
+    color: #24132d;
+    font-size: 8px;
+    padding: 5px 13px;
+    border-radius: 20px;
+    margin-top: 7px;
+  }
+  .preview-cinematic {
+    background: #080808;
+  }
+  .mini-cinematic {
+    text-align: center;
+    color: #f1d18b;
+    padding: 15px;
+  }
+  .mini-cinematic span {
+    font-size: 7px;
+    letter-spacing: 2px;
+  }
+  .mini-cinematic h3 {
+    font-family: Georgia, serif;
+    font-size: 28px;
+    line-height: 1.1;
+    margin: 13px 0;
+  }
+  .mini-cinema-line {
+    width: 50px;
+    height: 1px;
+    background: #d5a84f;
+    margin: auto;
+  }
+  .mini-cinematic p {
+    font-size: 8px;
+    letter-spacing: 3px;
+    margin: 10px;
+  }
+  .mini-cinematic strong {
+    font-size: 10px;
+  }
+  .preview-classic {
+    background: #f5ead7;
+    padding: 10px;
+  }
+  .mini-classic {
+    width: 100%;
+    height: 100%;
+    padding: 9px;
+  }
+  .mini-classic-border {
+    border: 1px solid #c9a66b;
+    outline: 1px solid #c9a66b;
+    outline-offset: -5px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #344052;
+  }
+  .mini-classic span {
+    font-size: 6px;
+    letter-spacing: 2px;
+    color: #a47d43;
+  }
+  .mini-classic h3 {
+    font-family: Georgia, serif;
+    font-size: 27px;
+    line-height: 1.1;
+    margin: 9px 0;
+  }
+  .mini-classic div {
+    color: #b58c42;
+    font-size: 12px;
+  }
+  .mini-classic p {
+    font-size: 8px;
+    margin-top: 8px;
+  }
+  .preview-romantic {
+    background: linear-gradient(145deg, #290b1b, #651e3b);
+  }
+  .mini-romantic {
+    text-align: center;
+    color: #f5d6cf;
+    padding: 15px;
+  }
+  .mini-romantic span {
+    font-size: 7px;
+    letter-spacing: 2px;
+    color: #e6ad9e;
+  }
+  .mini-romantic h3 {
+    font-family: Georgia, serif;
+    font-size: 29px;
+    line-height: 1.1;
+    margin-top: 12px;
+  }
+  .mini-rose {
+    font-size: 35px;
+    margin-top: 4px;
+  }
+  .mini-romantic p {
+    color: #e6ad9e;
+    font-size: 9px;
+  }
+  .preview-surprise {
+    background: radial-gradient(circle, #47266e, #170c2b);
+  }
+  .mini-surprise {
+    text-align: center;
+    color: #fff;
+    padding: 12px;
+  }
+  .mini-surprise span {
+    color: #e9c47b;
+    font-size: 7px;
+    letter-spacing: 2px;
+  }
+  .mini-gift {
+    font-size: 48px;
+    margin: 5px;
+  }
+  .mini-surprise h3 {
+    font-family: Georgia, serif;
+    font-size: 19px;
+    line-height: 1.1;
+  }
+  .mini-open {
+    display: inline-block;
+    background: #d4a44e;
+    color: #24132d;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 8px;
+    margin-top: 9px;
+  }
+  .preview-gallery {
+    background: #fff4e5;
+  }
+  .mini-gallery {
+    width: 100%;
+    padding: 12px;
+    text-align: center;
+    color: #634a3b;
+  }
+  .mini-gallery span {
+    font-size: 7px;
+    letter-spacing: 2px;
+    color: #c87553;
+  }
+  .mini-gallery h3 {
+    font-family: Georgia, serif;
+    font-size: 20px;
+    margin: 6px 0 10px;
+  }
+  .mini-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+  .mini-gallery-grid div {
+    height: 48px;
+    background: #f0d9c6;
+    display: grid;
+    place-items: center;
+    font-size: 19px;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 5px #00000015;
+  }
+  .mini-gallery p {
+    font-family: Georgia, serif;
+    font-size: 9px;
+    margin-top: 8px;
+  }
+  .mini-default {
+    text-align: center;
+    color: #30103f;
+  }
+  .mini-default div {
+    font-size: 40px;
+  }
+  .mini-default h3 {
+    font-family: Georgia, serif;
+    font-size: 17px;
+  }
+  .mini-default p {
+    font-size: 9px;
+    margin-top: 5px;
+  }
+
+  /* How it works */
+  .tab {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    width: 100%;
+    text-align: left;
+    border: 2px solid var(--ink);
+    border-radius: 18px;
+    padding: 1rem 1.2rem;
+    background: #fff;
+    transition:
+      transform 0.15s,
+      background 0.15s;
+  }
+  .tab:hover {
+    transform: translateX(4px);
+  }
+  .tab[aria-selected="true"] {
+    background: var(--ink);
+    color: #fff;
+    transform: translateX(10px);
+  }
+  .tab .num {
+    flex: none;
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: var(--sun);
+    color: var(--ink);
+    font-weight: 800;
+  }
+  .panel {
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 26px;
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 1.6rem;
+    min-height: 290px;
+  }
+  .panel[hidden] {
+    display: none;
+  }
+  .field {
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 0.7rem 1rem;
+    background: var(--blush);
+    font-weight: 500;
+  }
+  .bubble {
+    border: 2px solid var(--ink);
+    border-radius: 18px;
+    padding: 0.7rem 1rem;
+    max-width: 85%;
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.6);
+    overflow-y: auto;
+  }
+  .modal.open {
+    display: flex;
+  }
+  .modal-box {
+    animation: modalShow 0.25s ease;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    margin: auto;
+  }
+  @keyframes modalShow {
+    from {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .template-preview {
+      height: 170px;
+    }
+    .balloon.hide-sm {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rise,
+    .balloon,
+    .flame,
+    .modal-box {
+      animation: none;
+    }
+    .btn,
+    .template-card,
+    .tab,
+    .demo {
+      transition: none;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <button
+    type="button"
+    class="balloon"
+    aria-label="Pop balloon"
+    style="--c: #e11d7a; --s: 70px; left: 3%; top: 8%"
+  ></button>
+  <button
+    type="button"
+    class="balloon hide-sm"
+    aria-label="Pop balloon"
+    style="--c: #ffd45e; --s: 54px; --t: 7s; left: 47%; top: 5%"
+  ></button>
+  <button
+    type="button"
+    class="balloon"
+    aria-label="Pop balloon"
+    style="--c: #6d28d9; --s: 60px; --t: 5s; right: 3%; top: 10%"
+  ></button>
+  <button
+    type="button"
+    class="balloon hide-sm"
+    aria-label="Pop balloon"
+    style="--c: #2dd4bf; --s: 48px; --t: 8s; left: 44%; bottom: 6%"
+  ></button>
+
+  <div
+    class="max-w-7xl mx-auto px-5 py-14 lg:py-20 grid lg:grid-cols-[1.05fr_.95fr] gap-12 items-center relative z-10"
+  >
+    <div>
+      <p class="pill rise">🎉 Birthday pages you send as a link</p>
+
+      <h1
+        class="display text-5xl sm:text-6xl lg:text-7xl mt-6 rise"
+        style="--d: 0.1s"
+      >
+        A birthday wish they will want to keep.
+      </h1>
+
+      <p
+        class="text-lg leading-8 mt-6 max-w-xl rise"
+        style="--d: 0.2s; color: var(--muted)"
+      >
+        Add photos and a heartfelt message, choose a design, and share one link.
+        It opens as a little celebration on their phone.
+      </p>
+
+      <div class="flex flex-wrap gap-4 mt-8 rise" style="--d: 0.3s">
+        <a href="#templates" class="btn btn-pink">Choose a design</a>
+        <a href="#how-it-works" class="btn btn-white">See how it works</a>
+      </div>
+
+      <p class="mt-6 text-sm rise" style="--d: 0.4s; color: var(--muted)">
+        Try it on the right, and pop a balloon while you are here.
+      </p>
+    </div>
+
+    <!-- Live demo -->
+    <div class="demo rise" style="--d: 0.25s">
+      <label for="demoName" class="font-bold text-sm"
+        >Type a name to see it on the card</label
+      >
+      <input
+        id="demoName"
+        type="text"
+        value="Riya"
+        maxlength="18"
+        autocomplete="off"
+        class="mt-2"
+      />
+
+      <div class="stage">
+        <p class="display text-2xl">
+          Happy birthday, <b id="demoOut">Riya</b>!
+        </p>
+
+        <div class="cake" id="cake">
+          <i class="t2"></i><i class="t1"></i><i class="candle"></i
+          ><i class="flame"></i>
+        </div>
+
+        <p id="demoMsg" class="text-sm opacity-90">
+          Make a wish, then blow out the candle.
+        </p>
+      </div>
+
+      <button type="button" id="blowBtn" class="btn btn-pink w-full">
+        Blow out the candle
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- TEMPLATE GALLERY -->
+<section id="templates" class="px-5 py-16 sm:py-20">
+  <div class="max-w-7xl mx-auto">
+    <div
+      class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10"
+    >
+      <div>
+        <h2 class="display text-4xl sm:text-5xl">Pick a design</h2>
+        <p class="mt-3 max-w-lg" style="color: var(--muted)">
+          {{ templates|length }} ways to say happy birthday. Preview any of them
+          before you choose.
+        </p>
+      </div>
+
+      <div
+        class="flex flex-wrap gap-2"
+        role="group"
+        aria-label="Filter designs"
+      >
+        <button
+          type="button"
+          class="chip"
+          data-filter="all"
+          aria-pressed="true"
+        >
+          All
+        </button>
+        <button
+          type="button"
+          class="chip"
+          data-filter="playful"
+          aria-pressed="false"
+        >
+          Playful
+        </button>
+        <button
+          type="button"
+          class="chip"
+          data-filter="elegant"
+          aria-pressed="false"
+        >
+          Elegant
+        </button>
+        <button
+          type="button"
+          class="chip"
+          data-filter="dramatic"
+          aria-pressed="false"
+        >
+          Dramatic
+        </button>
+      </div>
+    </div>
+
+    <div
+      id="grid"
+      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-7"
+    >
+      {% for template in templates %}
+
+      <article class="template-card" data-theme="{{ template.gradient }}">
+        <div class="template-preview preview-{{ template.gradient }}">
+          {% if template.gradient == "minimal" %}
+
+          <div class="mini-minimal">
+            <span>HAPPY BIRTHDAY</span>
+            <h3>Celebrate<br /><i>You!</i></h3>
+            <div class="mini-line"></div>
+            <p>A beautiful day to remember</p>
+            <div class="mini-minimal-image">♡</div>
+          </div>
+
+          {% elif template.gradient == "cake" %}
+
+          <div class="mini-cake">
+            <span>✦ A SPECIAL DAY ✦</span>
+            <h3>Happy Birthday!</h3>
+            <div class="mini-cake-emoji">🎂</div>
+            <p>Make a wish!</p>
+            <div class="mini-gold-button">Blow Candle</div>
+          </div>
+
+          {% elif template.gradient == "cinematic" %}
+
+          <div class="mini-cinematic">
+            <span>THE WORLD PREMIERE</span>
+            <h3>YOUR<br />SPECIAL DAY</h3>
+            <div class="mini-cinema-line"></div>
+            <p>STARRING YOU</p>
+            <strong>★ ★ ★</strong>
+          </div>
+
+          {% elif template.gradient == "classic" %}
+
+          <div class="mini-classic">
+            <div class="mini-classic-border">
+              <span>A SPECIAL CELEBRATION</span>
+              <h3>Happy<br />Birthday</h3>
+              <div>❀ ❀ ❀</div>
+              <p>With love & wishes</p>
+            </div>
+          </div>
+
+          {% elif template.gradient == "romantic" %}
+
+          <div class="mini-romantic">
+            <span>♡ MADE WITH LOVE ♡</span>
+            <h3>Happy<br />Birthday</h3>
+            <div class="mini-rose">🌹</div>
+            <p>You are special</p>
+          </div>
+
+          {% elif template.gradient == "surprise" %}
+
+          <div class="mini-surprise">
+            <span>A LITTLE SURPRISE</span>
+            <div class="mini-gift">🎁</div>
+            <h3>Something<br />Special For You!</h3>
+            <div class="mini-open">OPEN GIFT</div>
+          </div>
+
+          {% elif template.gradient == "gallery" %}
+
+          <div class="mini-gallery">
+            <span>OUR MEMORIES</span>
+            <h3>Little Moments</h3>
+            <div class="mini-gallery-grid">
+              <div>📸</div>
+              <div>🌸</div>
+              <div>💛</div>
+              <div>🎉</div>
+            </div>
+            <p>Memories forever ♡</p>
+          </div>
+
+          {% else %}
+
+          <div class="mini-default">
+            <div>{{ template.emoji }}</div>
+            <h3>Happy Birthday!</h3>
+            <p>{{ template.name }}</p>
+          </div>
+
+          {% endif %}
+        </div>
+
+        <div class="p-4">
+          <h3 class="display text-xl">{{ template.name }}</h3>
+
+          <p class="text-sm mt-1 min-h-[2.5rem]" style="color: var(--muted)">
+            {{ template.description }}
+          </p>
+
+          <div class="flex gap-2 mt-4">
+            <button
+              type="button"
+              onclick="openPreview(this)"
+              data-name="{{ template.name }}"
+              data-description="{{ template.description }}"
+              data-details="{{ template.preview }}"
+              data-id="{{ template.id }}"
+              class="preview-trigger btn btn-white btn-sm flex-1"
+            >
+              Preview
+            </button>
+
+            <a
+              href="{% url 'create_birthday' %}?theme={{ template.id }}"
+              class="choose btn btn-pink btn-sm flex-1"
+            >
+              Choose
+            </a>
+          </div>
+        </div>
+      </article>
+
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- PREVIEW MODAL -->
+<div
+  id="previewModal"
+  class="modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="modalTitle"
+>
+  <div
+    class="modal-box bg-white max-w-md w-full p-6 relative"
+    style="
+      border: 2px solid var(--ink);
+      border-radius: 28px;
+      box-shadow: 8px 8px 0 var(--sun);
+    "
+  >
+    <button
+      type="button"
+      onclick="closePreview()"
+      aria-label="Close preview"
+      class="absolute top-3 right-5 text-3xl hover:text-pink-600"
+    >
+      &times;
+    </button>
+
+    <p
+      id="modalCount"
+      class="font-semibold text-sm mb-3"
+      style="color: var(--muted)"
+    ></p>
+
+    <div id="modalPreview" class="template-preview"></div>
+
+    <h3 id="modalTitle" class="display text-3xl mt-5"></h3>
+    <p
+      id="modalDescription"
+      class="font-semibold mt-2"
+      style="color: var(--vio)"
+    ></p>
+    <p
+      id="modalDetails"
+      class="text-sm leading-7 mt-3"
+      style="color: var(--muted)"
+    ></p>
+
+    <div class="flex gap-3 mt-6">
+      <button
+        type="button"
+        id="modalPrev"
+        class="btn btn-white btn-sm"
+        aria-label="Previous design"
+      >
+        ←
+      </button>
+      <a id="modalChoose" href="#" class="btn btn-pink flex-1"
+        >Choose this design</a
+      >
+      <button
+        type="button"
+        id="modalNext"
+        class="btn btn-white btn-sm"
+        aria-label="Next design"
+      >
+        →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section
+  id="how-it-works"
+  class="px-5 py-16 sm:py-20"
+  style="background: var(--lilac); border-block: 2px solid var(--ink)"
+>
+  <div
+    class="max-w-6xl mx-auto grid lg:grid-cols-[.9fr_1.1fr] gap-10 items-center"
+  >
+    <div>
+      <h2 class="display text-4xl sm:text-5xl">How it works</h2>
+      <p class="mt-3 mb-8" style="color: var(--muted)">
+        Three steps. Tap each one to see what happens.
+      </p>
+
+      <div class="grid gap-3" role="tablist" aria-label="Steps">
+        <button type="button" role="tab" class="tab" aria-selected="true">
+          <span class="num">1</span
+          ><span class="font-bold">Create your wish</span>
+        </button>
+        <button type="button" role="tab" class="tab" aria-selected="false">
+          <span class="num">2</span><span class="font-bold">Get your link</span>
+        </button>
+        <button type="button" role="tab" class="tab" aria-selected="false">
+          <span class="num">3</span
+          ><span class="font-bold">Share the happiness</span>
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel" role="tabpanel">
+        <p class="font-bold mb-4">Add their details and your message</p>
+        <p class="text-sm mb-1" style="color: var(--muted)">Birthday person</p>
+        <div class="field">Riya</div>
+        <p class="text-sm mt-4 mb-1" style="color: var(--muted)">
+          Your message
+        </p>
+        <div class="field">
+          Wishing you a year as bright as your smile. Open your surprise!
+        </div>
+        <p class="text-sm mt-4" style="color: var(--muted)">
+          Photos and your name go in here too.
+        </p>
+      </div>
+
+      <div class="panel" role="tabpanel" hidden>
+        <p class="font-bold mb-4">Your surprise gets its own link</p>
+        <div class="field flex items-center justify-between gap-3">
+          <span class="truncate">…/wish/riya-7k2p</span>
+          <button type="button" id="copyDemo" class="btn btn-ink btn-sm">
+            Copy link
+          </button>
+        </div>
+        <p class="text-sm mt-4" style="color: var(--muted)">
+          Every wish is private to whoever you send the link to.
+        </p>
+      </div>
+
+      <div class="panel" role="tabpanel" hidden>
+        <p class="font-bold mb-4">Send it anywhere you chat</p>
+        <div class="grid gap-3">
+          <div class="bubble" style="background: var(--sun)">
+            Open this when you have a minute 🎁
+          </div>
+          <div class="bubble ml-auto" style="background: var(--blush)">
+            Wait… is this for me?! 😭💖
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="px-5 py-16 sm:py-20" style="background: var(--sun)">
+  <div class="max-w-4xl mx-auto text-center">
+    <h2 class="display text-4xl sm:text-6xl">Ready to make someone smile?</h2>
+
+    <p class="text-lg leading-8 mt-5 max-w-2xl mx-auto">
+      Pick a design, add your photos and message, and send the link.
+    </p>
+
+    <a href="#templates" class="btn btn-ink mt-8">Choose a design</a>
+  </div>
+</section>
+
+<script>
+  (function () {
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    // Confetti burst at a screen position
+    function burst(x, y, n) {
+      if (reduce) return;
+      const colors = ["#e11d7a", "#6d28d9", "#ffd45e", "#2dd4bf", "#fb923c"];
+      for (let i = 0; i < n; i++) {
+        const p = document.createElement("i");
+        p.className = "confetti";
+        p.style.cssText =
+          "left:" + x + "px;top:" + y + "px;background:" + colors[i % 5];
+        document.body.appendChild(p);
+        const a = Math.random() * Math.PI * 2,
+          d = 60 + Math.random() * 130;
+        p.animate(
+          [
+            { transform: "translate(0,0) rotate(0)", opacity: 1 },
+            {
+              transform:
+                "translate(" +
+                Math.cos(a) * d +
+                "px," +
+                (Math.sin(a) * d + 90) +
+                "px) rotate(" +
+                Math.random() * 540 +
+                "deg)",
+              opacity: 0,
+            },
+          ],
+          {
+            duration: 900 + Math.random() * 600,
+            easing: "cubic-bezier(.2,.8,.3,1)",
+          },
+        ).onfinish = function () {
+          p.remove();
+        };
+      }
+    }
+
+    // Pop-able balloons
+    document.querySelectorAll(".balloon").forEach(function (b) {
+      b.addEventListener("click", function () {
+        const r = b.getBoundingClientRect();
+        burst(r.left + r.width / 2, r.top + r.height / 2, 20);
+        b.classList.add("popped");
+        setTimeout(function () {
+          b.classList.remove("popped");
+        }, 3500);
+      });
+    });
+
+    // Live name + candle demo
+    const nameInput = document.getElementById("demoName");
+    const nameOut = document.getElementById("demoOut");
+    const cake = document.getElementById("cake");
+    const blowBtn = document.getElementById("blowBtn");
+    const demoMsg = document.getElementById("demoMsg");
+    let blown = false;
+
+    nameInput.addEventListener("input", function () {
+      nameOut.textContent = nameInput.value.trim() || "you";
+    });
+
+    blowBtn.addEventListener("click", function () {
+      blown = !blown;
+      cake.classList.toggle("out", blown);
+      blowBtn.textContent = blown ? "Light it again" : "Blow out the candle";
+      demoMsg.textContent = blown
+        ? "Wish made! Your real page can have photos and a message too."
+        : "Make a wish, then blow out the candle.";
+      if (blown) {
+        const r = cake.getBoundingClientRect();
+        burst(r.left + r.width / 2, r.top, 36);
+      }
+    });
+
+    // Template filters
+    const grid = document.getElementById("grid");
+    const cards = Array.from(grid.querySelectorAll(".template-card"));
+    const chips = Array.from(document.querySelectorAll(".chip"));
+    const moods = {
+      cake: "playful",
+      surprise: "playful",
+      gallery: "playful",
+      classic: "elegant",
+      romantic: "elegant dramatic",
+      minimal: "elegant",
+      cinematic: "dramatic",
+    };
+
+    cards.forEach(function (c) {
+      c.dataset.moods = moods[c.dataset.theme] || "";
+    });
+
+    chips.forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        const f = chip.dataset.filter;
+        chips.forEach(function (x) {
+          x.setAttribute("aria-pressed", x === chip);
+        });
+        cards.forEach(function (c) {
+          const show = f === "all" || c.dataset.moods.indexOf(f) !== -1;
+          c.hidden = !show;
+          if (show && !reduce) {
+            c.animate(
+              [
+                { opacity: 0, transform: "translateY(14px) scale(.97)" },
+                { opacity: 1, transform: "none" },
+              ],
+              { duration: 300, easing: "ease-out" },
+            );
+          }
+        });
+      });
+    });
+
+    // Preview modal with previous / next
+    const modal = document.getElementById("previewModal");
+    const modalPreview = document.getElementById("modalPreview");
+
+    // Move the modal straight under <body> so no parent (transform, overflow,
+    // stacking context from base.html) can clip it or push it behind the navbar
+    document.body.appendChild(modal);
+    let current = 0,
+      lastFocus = null;
+
+    function visibleCards() {
+      return cards.filter(function (c) {
+        return !c.hidden;
+      });
+    }
+
+    function showCard(i) {
+      const list = visibleCards();
+      current = (i + list.length) % list.length;
+      const card = list[current];
+      const btn = card.querySelector(".preview-trigger");
+      const src = card.querySelector(".template-preview");
+
+      modalPreview.className = src.className;
+      modalPreview.innerHTML = src.innerHTML;
+
+      document.getElementById("modalTitle").textContent = btn.dataset.name;
+      document.getElementById("modalDescription").textContent =
+        btn.dataset.description;
+      document.getElementById("modalDetails").textContent =
+        btn.dataset.details ||
+        "A beautiful birthday design made especially for your loved ones.";
+      document.getElementById("modalChoose").href =
+        card.querySelector(".choose").href;
+      document.getElementById("modalCount").textContent =
+        current + 1 + " of " + list.length;
+    }
+
+    window.openPreview = function (button) {
+      lastFocus = button;
+      showCard(visibleCards().indexOf(button.closest(".template-card")));
+      modal.classList.add("open");
+      document.documentElement.style.overflow = "hidden";
+      document.body.style.overflow = "hidden";
+      modal.scrollTop = 0;
+      document.getElementById("modalChoose").focus({ preventScroll: true });
+    };
+
+    window.closePreview = function () {
+      modal.classList.remove("open");
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+      if (lastFocus) lastFocus.focus({ preventScroll: true });
+    };
+
+    cards.forEach(function (c) {
+      c.querySelector(".template-preview").addEventListener(
+        "click",
+        function () {
+          window.openPreview(c.querySelector(".preview-trigger"));
+        },
+      );
+    });
+
+    document.getElementById("modalPrev").addEventListener("click", function () {
+      showCard(current - 1);
+    });
+    document.getElementById("modalNext").addEventListener("click", function () {
+      showCard(current + 1);
+    });
+
+    modal.addEventListener("click", function (e) {
+      if (e.target === modal) window.closePreview();
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (!modal.classList.contains("open")) return;
+      if (e.key === "Escape") window.closePreview();
+      if (e.key === "ArrowLeft") showCard(current - 1);
+      if (e.key === "ArrowRight") showCard(current + 1);
+    });
+
+    // How-it-works steps
+    const tabs = Array.from(document.querySelectorAll("[role=tab]"));
+    const panels = Array.from(document.querySelectorAll(".panel"));
+
+    tabs.forEach(function (tab, i) {
+      tab.addEventListener("click", function () {
+        tabs.forEach(function (t, j) {
+          t.setAttribute("aria-selected", i === j);
+          panels[j].hidden = i !== j;
+        });
+      });
+    });
+
+    const copyBtn = document.getElementById("copyDemo");
+    copyBtn.addEventListener("click", function () {
+      copyBtn.textContent = "Copied!";
+      const r = copyBtn.getBoundingClientRect();
+      burst(r.left + r.width / 2, r.top, 16);
+      setTimeout(function () {
+        copyBtn.textContent = "Copy link";
+      }, 1800);
+    });
+  })();
+</script>
+
+{% endblock %}

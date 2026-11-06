@@ -1,0 +1,783 @@
+{% extends 'base.html' %} {% block title %}Create Birthday Card | BirthdayWish{%endblock %} {% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Figtree:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    --ink: #2b1038;
+    --mag: #e11d7a;
+    --vio: #6d28d9;
+    --sun: #ffd45e;
+    --blush: #fff6fa;
+    --lilac: #efe4ff;
+    --muted: #6b4a7a;
+  }
+  body {
+    background: var(--blush);
+    color: var(--ink);
+    font-family: "Figtree", system-ui, sans-serif;
+  }
+  .display {
+    font-family: "Fraunces", Georgia, serif;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+  }
+  :focus-visible {
+    outline: 3px solid var(--vio);
+    outline-offset: 3px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 0.95rem 1.6rem;
+    font-weight: 700;
+    box-shadow: 4px 4px 0 var(--ink);
+    transition:
+      transform 0.15s,
+      box-shadow 0.15s;
+    cursor: pointer;
+    text-align: center;
+  }
+  .btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--ink);
+  }
+  .btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 var(--ink);
+  }
+  .btn:disabled {
+    opacity: 0.65;
+    pointer-events: none;
+  }
+  .btn-pink {
+    background: var(--mag);
+    color: #fff;
+  }
+  .btn-white {
+    background: #fff;
+    color: var(--ink);
+  }
+  .btn-sm {
+    padding: 0.45rem 0.9rem;
+    font-size: 0.8rem;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 0.4rem 1rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  /* Page */
+  .page {
+    position: relative;
+    overflow: hidden;
+    padding: 3rem 1rem 4rem;
+    background:
+      radial-gradient(circle at 1px 1px, #f3c9df 1.5px, transparent 0) 0 0/26px
+        26px,
+      var(--blush);
+  }
+  .rise {
+    animation: rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s) both;
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(22px);
+    }
+  }
+  .panel {
+    background: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 28px;
+    box-shadow: 8px 8px 0 var(--ink);
+    padding: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .panel {
+      padding: 2rem;
+    }
+  }
+
+  /* Form fields */
+  .label {
+    display: block;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.45rem;
+  }
+  .label em {
+    color: var(--mag);
+    font-style: normal;
+  }
+  .hint {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.35rem;
+  }
+  .field {
+    width: 100%;
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 0.75rem 1rem;
+    background: var(--blush);
+    font-weight: 500;
+    color: var(--ink);
+    transition:
+      box-shadow 0.15s,
+      background 0.15s;
+  }
+  .field::placeholder {
+    color: #a88bb8;
+  }
+  .field:focus {
+    outline: 0;
+    background: #fff;
+    box-shadow: 4px 4px 0 var(--mag);
+  }
+  textarea.field {
+    resize: vertical;
+    min-height: 7rem;
+  }
+  .count {
+    text-align: right;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-top: 0.3rem;
+  }
+  .count.near {
+    color: var(--mag);
+    font-weight: 700;
+  }
+
+  /* Progress */
+  .meter {
+    height: 12px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: #fff;
+    overflow: hidden;
+  }
+  .meter i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: var(--mag);
+    transition: width 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  /* Image drop zone */
+  .drop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    text-align: center;
+    border: 2px dashed var(--ink);
+    border-radius: 18px;
+    padding: 1.4rem 1rem;
+    background: var(--blush);
+    cursor: pointer;
+    transition:
+      background 0.15s,
+      transform 0.15s;
+  }
+  .drop:hover,
+  .drop.over {
+    background: var(--lilac);
+    transform: translateY(-2px);
+  }
+  .drop:focus-within {
+    outline: 3px solid var(--vio);
+    outline-offset: 3px;
+  }
+  .drop .icon {
+    font-size: 2rem;
+  }
+  .drop.has-file {
+    flex-direction: row;
+    justify-content: flex-start;
+    text-align: left;
+    gap: 1rem;
+    padding: 0.8rem;
+    border-style: solid;
+  }
+  .drop img {
+    width: 4.5rem;
+    height: 4.5rem;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 2px solid var(--ink);
+  }
+  .vh {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .err {
+    color: #b91c1c;
+    font-weight: 600;
+    font-size: 0.85rem;
+    margin-top: 0.4rem;
+  }
+
+  /* Live preview */
+  .live {
+    --bg: #fff0f8;
+    --fg: #2b1038;
+    --ac: #e11d7a;
+    background: var(--bg);
+    color: var(--fg);
+    border: 2px solid var(--ink);
+    border-radius: 22px;
+    padding: 1.6rem 1.3rem;
+    text-align: center;
+    min-height: 21rem;
+    transition:
+      background 0.4s,
+      color 0.4s;
+  }
+  .live .age {
+    display: inline-block;
+    background: var(--ac);
+    color: var(--bg);
+    border-radius: 999px;
+    padding: 0.2rem 0.9rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+  .live h3 {
+    font-size: 1.9rem;
+    margin: 0.8rem 0 0.3rem;
+    overflow-wrap: anywhere;
+  }
+  .live .who {
+    color: var(--ac);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+  .live .photo {
+    width: 7.5rem;
+    height: 7.5rem;
+    margin: 1rem auto;
+    border: 3px solid var(--ac);
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  .live .photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .live .msg {
+    margin: 1rem auto 0;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    max-width: 24rem;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .live .from {
+    margin-top: 1rem;
+    font-style: italic;
+    font-family: Georgia, serif;
+    overflow-wrap: anywhere;
+  }
+  .live .empty {
+    opacity: 0.5;
+  }
+  .confetti {
+    position: fixed;
+    width: 8px;
+    height: 12px;
+    border-radius: 2px;
+    pointer-events: none;
+    z-index: 90;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rise {
+      animation: none;
+    }
+    .btn,
+    .drop,
+    .meter i,
+    .live {
+      transition: none;
+    }
+  }
+</style>
+{% endblock %} {% block content %}
+
+<section class="page">
+  <div class="max-w-6xl mx-auto">
+    <!-- Heading -->
+    <div class="text-center mb-10">
+      <p class="pill rise">
+        🎨 Your design: {{ selected_theme|default:"classic"|title|cut:"_" }}
+      </p>
+
+      <h1 class="display text-4xl sm:text-5xl mt-5 rise" style="--d: 0.1s">
+        Create your birthday surprise
+      </h1>
+
+      <p
+        class="mt-4 max-w-xl mx-auto rise"
+        style="--d: 0.2s; color: var(--muted)"
+      >
+        Fill in the details and watch the card take shape. Everything on the
+        right updates as you type.
+      </p>
+    </div>
+
+    <div class="grid lg:grid-cols-[1.1fr_.9fr] gap-8 items-start">
+      <!-- Form -->
+      <div class="panel rise" style="--d: 0.25s">
+        <form
+          method="POST"
+          action="{% url 'create_birthday' %}"
+          enctype="multipart/form-data"
+          id="birthdayForm"
+          class="space-y-5"
+        >
+          {% csrf_token %}
+
+          <!-- Selected Theme -->
+          <input type="hidden" name="theme" value="{{ selected_theme }}" />
+
+          <!-- Progress -->
+          <div>
+            <div class="flex justify-between text-sm font-bold mb-2">
+              <span>Required details</span>
+              <span id="progressText">0 of 5 done</span>
+            </div>
+            <div class="meter" aria-hidden="true"><i id="progressBar"></i></div>
+          </div>
+
+          <!-- Birthday Person and Age -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label for="birthday_person" class="label"
+                >Birthday person <em>*</em></label
+              >
+              <input
+                type="text"
+                name="birthday_person"
+                id="birthday_person"
+                placeholder="Their name"
+                maxlength="100"
+                required
+                class="field"
+              />
+            </div>
+
+            <div>
+              <label for="age" class="label">Turning age <em>*</em></label>
+              <input
+                type="number"
+                name="age"
+                id="age"
+                placeholder="How old are they turning?"
+                min="0"
+                max="150"
+                required
+                class="field"
+              />
+            </div>
+          </div>
+
+          <!-- Title and Sender -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label for="card_title" class="label"
+                >Card title <em>*</em></label
+              >
+              <input
+                type="text"
+                name="card_title"
+                id="card_title"
+                placeholder="Happy Birthday!"
+                maxlength="150"
+                required
+                class="field"
+              />
+            </div>
+
+            <div>
+              <label for="sender_name" class="label">From <em>*</em></label>
+              <input
+                type="text"
+                name="sender_name"
+                id="sender_name"
+                placeholder="Your name"
+                maxlength="100"
+                required
+                class="field"
+              />
+            </div>
+          </div>
+
+          <!-- Birthday Message -->
+          <div>
+            <label for="message" class="label">Your message <em>*</em></label>
+            <textarea
+              name="message"
+              id="message"
+              rows="4"
+              maxlength="2000"
+              placeholder="Write your birthday message here..."
+              required
+              class="field"
+            ></textarea>
+            <p class="count"><span id="charCount">0</span>/2000 characters</p>
+          </div>
+
+          <!-- Birthday Image -->
+          <div>
+            <span class="label">Birthday photo</span>
+
+            <label for="image" id="drop" class="drop">
+              <span class="icon" id="dropIcon">📸</span>
+              <span id="dropText">
+                <strong id="fileName">Add a photo</strong><br />
+                <small style="color: var(--muted)" id="dropHint"
+                  >Click to choose, or drop an image here</small
+                >
+              </span>
+            </label>
+
+            <input
+              type="file"
+              name="image"
+              id="image"
+              accept="image/*"
+              class="vh"
+            />
+
+            <div class="flex items-center justify-between mt-2">
+              <p id="imageError" class="err" role="alert"></p>
+              <button
+                type="button"
+                id="removeImage"
+                class="btn btn-white btn-sm"
+                hidden
+              >
+                Remove photo
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" id="submitBtn" class="btn btn-pink w-full">
+            <i class="bi bi-stars"></i>
+            <span>Create birthday card</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Live preview -->
+      <aside
+        class="lg:sticky lg:top-6 rise"
+        style="--d: 0.35s"
+        aria-label="Live preview"
+      >
+        <p class="font-bold mb-3">Live preview</p>
+
+        <div class="live" id="live">
+          <span class="age" id="pvAge" hidden></span>
+          <h3 class="display" id="pvTitle">Happy Birthday!</h3>
+          <p class="who" id="pvName">for someone special</p>
+
+          <div class="photo" id="pvPhoto" hidden>
+            <img id="pvImg" alt="Your chosen photo" />
+          </div>
+
+          <p class="msg empty" id="pvMsg">
+            Your message will appear here as you type it.
+          </p>
+          <p class="from" id="pvFrom">With love</p>
+        </div>
+
+        <p class="hint mt-3">
+          A simplified look. Your chosen design adds its own layout and
+          animations.
+        </p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+{% endblock %} {% block extra_js %}
+<script>
+  (function () {
+    const reduce = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const $ = function (id) {
+      return document.getElementById(id);
+    };
+
+    const form = $("birthdayForm");
+    const fields = {
+      title: $("card_title"),
+      sender: $("sender_name"),
+      name: $("birthday_person"),
+      age: $("age"),
+      message: $("message"),
+    };
+    const required = Object.keys(fields).map(function (k) {
+      return fields[k];
+    });
+
+    // Match the preview colours to the chosen design when the name hints at one
+    const themes = {
+      minimal: ["#f1eee9", "#292929", "#d66d59"],
+      cake: ["#2b1747", "#ffffff", "#f5c76b"],
+      cinematic: ["#0b0b0b", "#f1d18b", "#d5a84f"],
+      classic: ["#f5ead7", "#344052", "#b58c42"],
+      romantic: ["#4a1530", "#f5d6cf", "#e6ad9e"],
+      surprise: ["#2a1550", "#ffffff", "#e9c47b"],
+      gallery: ["#fff4e5", "#634a3b", "#c87553"],
+    };
+    const chosen = (
+      form.querySelector("[name=theme]").value || "classic"
+    ).toLowerCase();
+    const match = Object.keys(themes).filter(function (k) {
+      return chosen.indexOf(k) !== -1;
+    })[0];
+    if (match) {
+      const live = $("live"),
+        t = themes[match];
+      live.style.setProperty("--bg", t[0]);
+      live.style.setProperty("--fg", t[1]);
+      live.style.setProperty("--ac", t[2]);
+    }
+
+    // Confetti burst
+    function burst(x, y, n) {
+      if (reduce) return;
+      const colors = ["#e11d7a", "#6d28d9", "#ffd45e", "#2dd4bf", "#fb923c"];
+      for (let i = 0; i < n; i++) {
+        const p = document.createElement("i");
+        p.className = "confetti";
+        p.style.cssText =
+          "left:" + x + "px;top:" + y + "px;background:" + colors[i % 5];
+        document.body.appendChild(p);
+        const a = Math.random() * Math.PI * 2,
+          d = 70 + Math.random() * 150;
+        p.animate(
+          [
+            { transform: "translate(0,0) rotate(0)", opacity: 1 },
+            {
+              transform:
+                "translate(" +
+                Math.cos(a) * d +
+                "px," +
+                (Math.sin(a) * d + 100) +
+                "px) rotate(" +
+                Math.random() * 540 +
+                "deg)",
+              opacity: 0,
+            },
+          ],
+          {
+            duration: 1000 + Math.random() * 600,
+            easing: "cubic-bezier(.2,.8,.3,1)",
+          },
+        ).onfinish = function () {
+          p.remove();
+        };
+      }
+    }
+
+    // Live preview text
+    function setText(el, value, placeholder) {
+      el.textContent = value.trim() || placeholder;
+      el.classList.toggle("empty", !value.trim());
+    }
+
+    function updatePreview() {
+      setText($("pvTitle"), fields.title.value, "Happy Birthday!");
+      $("pvTitle").classList.remove("empty");
+
+      const person = fields.name.value.trim();
+      $("pvName").textContent = person
+        ? "for " + person
+        : "for someone special";
+
+      const age = fields.age.value.trim();
+      $("pvAge").hidden = !age;
+      $("pvAge").textContent = age ? "Turning " + age : "";
+
+      setText(
+        $("pvMsg"),
+        fields.message.value,
+        "Your message will appear here as you type it.",
+      );
+
+      const sender = fields.sender.value.trim();
+      $("pvFrom").textContent = sender ? "With love, " + sender : "With love";
+    }
+
+    // Progress meter, with one small celebration when everything is filled
+    let celebrated = false;
+
+    function updateProgress() {
+      const done = required.filter(function (el) {
+        return el.value.trim() !== "";
+      }).length;
+      $("progressBar").style.width = (done / required.length) * 100 + "%";
+      $("progressText").textContent = done + " of " + required.length + " done";
+
+      if (done === required.length && !celebrated) {
+        celebrated = true;
+        const r = $("progressBar").parentElement.getBoundingClientRect();
+        burst(r.right - 20, r.top, 30);
+      }
+      if (done < required.length) celebrated = false;
+    }
+
+    required.forEach(function (el) {
+      el.addEventListener("input", function () {
+        updatePreview();
+        updateProgress();
+      });
+    });
+
+    // Message character counter
+    const charCount = $("charCount");
+    fields.message.addEventListener("input", function () {
+      charCount.textContent = this.value.length;
+      charCount.parentElement.classList.toggle(
+        "near",
+        this.value.length > 1800,
+      );
+    });
+
+    // Image: choose, drop, preview, remove
+    const imageInput = $("image");
+    const drop = $("drop");
+    const fileName = $("fileName");
+    const dropHint = $("dropHint");
+    const dropIcon = $("dropIcon");
+    const removeBtn = $("removeImage");
+    const imageError = $("imageError");
+    let objectUrl = null;
+
+    function clearImage() {
+      imageInput.value = "";
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      objectUrl = null;
+      fileName.textContent = "Add a photo";
+      dropHint.textContent = "Click to choose, or drop an image here";
+      drop.classList.remove("has-file");
+      const thumb = drop.querySelector("img");
+      if (thumb) thumb.remove();
+      dropIcon.hidden = false;
+      removeBtn.hidden = true;
+      $("pvPhoto").hidden = true;
+      $("pvImg").removeAttribute("src");
+    }
+
+    function showImage() {
+      const file = imageInput.files[0];
+      imageError.textContent = "";
+
+      if (!file) {
+        clearImage();
+        return;
+      }
+
+      if (!file.type.startsWith("image/")) {
+        clearImage();
+        imageError.textContent =
+          "That file is not an image. Please choose a JPG, PNG or similar.";
+        return;
+      }
+
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+      objectUrl = URL.createObjectURL(file);
+
+      fileName.textContent = file.name;
+      dropHint.textContent = "Click to choose a different photo";
+      drop.classList.add("has-file");
+      dropIcon.hidden = true;
+
+      let thumb = drop.querySelector("img");
+      if (!thumb) {
+        thumb = document.createElement("img");
+        thumb.alt = "";
+        drop.insertBefore(thumb, drop.firstChild);
+      }
+      thumb.src = objectUrl;
+
+      $("pvImg").src = objectUrl;
+      $("pvPhoto").hidden = false;
+      removeBtn.hidden = false;
+    }
+
+    imageInput.addEventListener("change", showImage);
+    removeBtn.addEventListener("click", function () {
+      imageError.textContent = "";
+      clearImage();
+    });
+
+    ["dragenter", "dragover"].forEach(function (ev) {
+      drop.addEventListener(ev, function (e) {
+        e.preventDefault();
+        drop.classList.add("over");
+      });
+    });
+    ["dragleave", "drop"].forEach(function (ev) {
+      drop.addEventListener(ev, function (e) {
+        e.preventDefault();
+        drop.classList.remove("over");
+      });
+    });
+    drop.addEventListener("drop", function (e) {
+      if (e.dataTransfer && e.dataTransfer.files.length) {
+        imageInput.files = e.dataTransfer.files;
+        showImage();
+      }
+    });
+
+    // Stop double submits
+    form.addEventListener("submit", function () {
+      const btn = $("submitBtn");
+      btn.disabled = true;
+      btn.querySelector("span").textContent = "Creating your card...";
+    });
+
+    // The page may reload with values already filled in (for example after a form error)
+    updatePreview();
+    updateProgress();
+    charCount.textContent = fields.message.value.length;
+  })();
+</script>
+{% endblock %}
