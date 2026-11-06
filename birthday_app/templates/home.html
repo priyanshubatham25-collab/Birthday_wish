@@ -829,7 +829,7 @@ Birthday Surprises{% endblock %} {% block extra_css %}
 
     <div
       id="grid"
-      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 sm:gap-7"
+      class="grid grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"
     >
       {% for template in templates %}
 
@@ -934,14 +934,14 @@ Birthday Surprises{% endblock %} {% block extra_css %}
               data-description="{{ template.description }}"
               data-details="{{ template.preview }}"
               data-id="{{ template.id }}"
-              class="preview-trigger btn btn-white btn-sm flex-1"
+              class="preview-trigger btn btn-white btn-sm flex-1 min-w-0 text-xs sm:text-sm"
             >
               Preview
             </button>
 
             <a
               href="{% url 'create_birthday' %}?theme={{ template.id }}"
-              class="choose btn btn-pink btn-sm flex-1"
+              class="choose btn btn-pink btn-sm flex-1 min-w-0 text-xs sm:text-sm text-center"
             >
               Choose
             </a>
