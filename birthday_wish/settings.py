@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-jkn=5s4rfvkcw#ju&6x@6wnv*7musnf$i^*zx&s5f&dssg)vzu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['birthday-wish-iv2w.onrender.com','localhost','127.0.0.1','birthday-wish-mu-beryl.vercel.app/']
+ALLOWED_HOSTS = ['birthday-wish-iv2w.onrender.com','localhost','127.0.0.1','.vercel.app']
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://birthday-wish-mu-beryl.vercel.app/",
+]
 
 
 
